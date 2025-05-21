@@ -66,5 +66,5 @@ rodape.pack(fill="x", side="bottom")
 btn_ver_mais = ctk.CTkButton(master=rodape, text="Ver Mais", fg_color="white", text_color="black", height=28, width=100)
 btn_ver_mais.pack(pady=5)
 
-# rodar o app
+# func pra rodar o app
 app.mainloop()

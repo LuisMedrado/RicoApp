@@ -1,63 +1,70 @@
+import customtkinter as ctk
 import tkinter as tk
-from tkinter import font as tkfont
 
-# const das cores
-COR_BG_PRINCIPAL = "#2b1b4a"
-COR_NAVBAR = "#3f2b7b"
-COR_HL = "#7c5cf4"
-COR_TEXTO = "white"
-COR_BOTAO_1 = "#e0dcf9"
-COR_BOTAO_2 = "#7c5cf4"
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
 
-# tlea principal
-root = tk.Tk()
-root.title("Tela inicial RICO")
-root.state("zoomed")
-root.configure(bg=COR_BG_PRINCIPAL)
+# start da tela principal
+app = ctk.CTk()
+app.title("Tela Inicial")
+app.state("zoomed")
 
-# fonte custom
-fonte_titulo = tkfont.Font(family="Roboto", size=40, weight="bold")
-fonte_botao = tkfont.Font(family="Roboto", size=12, weight="bold")
+# consts cores
+cor_header = "#3c2e83"
+cor_subheader = "#6c4eea"
+cor_fundo = "#2b1b4a"
+cor_clara = "#dad8f8"
+cor_azul = "#7c65f2"
 
-# navbar
-navbar = tk.Frame(root, bg=COR_NAVBAR, height=60)
-navbar.pack(side="top", fill="x")
+# container geral
+frame_main = ctk.CTkFrame(master=app, fg_color=cor_fundo)
+frame_main.pack(fill="both", expand=True)
 
-# botões da navbar
-tk.Label(navbar, text="Sobre", bg=COR_NAVBAR, fg=COR_TEXTO, font=fonte_botao).pack(side="right", padx=60)
-tk.Label(navbar, text="Login", bg=COR_NAVBAR, fg=COR_TEXTO, font=fonte_botao).pack(side="right", padx=60)
+# header
+header = ctk.CTkFrame(master=frame_main, height=60, fg_color=cor_header)
+header.pack(fill="x", side="top")
 
-cadastro_btn = tk.Button(navbar, text="Cadastre-se", bg="white", fg=COR_NAVBAR, font=fonte_botao, relief="sunken", padx=60, pady=15)
-cadastro_btn.pack(side="right", padx=10)
+frame_menu = ctk.CTkFrame(master=header, fg_color=cor_header)
+frame_menu.pack(side="right", padx=20, pady=10)
+
+btn_sobre = ctk.CTkButton(master=frame_menu, text="Sobre", fg_color="transparent", hover_color=cor_azul)
+btn_login = ctk.CTkButton(master=frame_menu, text="Login", fg_color="transparent", hover_color=cor_azul)
+btn_cadastro = ctk.CTkButton(master=frame_menu, text="Cadastre-se", fg_color="white", text_color="black")
+
+btn_sobre.pack(side="left", padx=5)
+btn_login.pack(side="left", padx=5)
+btn_cadastro.pack(side="left", padx=5)
+
+# faixa cor diferente
+subheader = ctk.CTkFrame(master=frame_main, height=20, fg_color=cor_subheader)
+subheader.pack(fill="x", side="top")
 
 # conteudo principal
-conteudo = tk.Frame(root, bg=COR_BG_PRINCIPAL)
-conteudo.pack(expand=True)
+frame_conteudo = ctk.CTkFrame(master=frame_main, fg_color=cor_fundo)
+frame_conteudo.pack(fill="both", expand=True, pady=30, padx=60)
 
-texto = """Construa
-seu império
-começando do
-completo zero"""
-label_texto = tk.Label(conteudo, text=texto, bg=COR_BG_PRINCIPAL, fg=COR_TEXTO, font=fonte_titulo, justify="left")
-label_texto.pack(anchor="w", padx=80, pady=20)
+titulo = ctk.CTkLabel(master=frame_conteudo,
+                      text="Construa\nseu império\ncomeçando do\ncompleto zero",
+                      font=ctk.CTkFont(size=40, weight="bold"),
+                      justify="left")
+titulo.pack(anchor="w", pady=20)
 
-# botoes principais
-botoes_frame = tk.Frame(conteudo, bg=COR_BG_PRINCIPAL)
-botoes_frame.pack(anchor="w", padx=80, pady=10)
+# botões de ação
+frame_botoes = ctk.CTkFrame(master=frame_conteudo, fg_color=cor_fundo)
+frame_botoes.pack(anchor="w", pady=20)
 
-btn1 = tk.Button(botoes_frame, text="ENTRE AGORA", font=fonte_botao, bg=COR_BOTAO_1, fg=COR_NAVBAR, padx=20, pady=10)
-btn1.pack(side="left", padx=10)
+btn_entrar = ctk.CTkButton(master=frame_botoes, text="ENTRE AGORA", fg_color=cor_clara, text_color="black")
+btn_trailer = ctk.CTkButton(master=frame_botoes, text="▶ VEJA O TRAILER", fg_color=cor_azul)
 
-btn2 = tk.Button(botoes_frame, text="▶ VEJA O TRAILER", font=fonte_botao, bg=COR_BOTAO_2, fg="white", padx=20, pady=10)
-btn2.pack(side="left", padx=10)
+btn_entrar.pack(side="left", padx=10)
+btn_trailer.pack(side="left", padx=10)
 
-# botao de baixo
-rodape = tk.Frame(root, bg=COR_HL, height=80)
-rodape.pack(side="bottom", fill="x")
+# footer
+rodape = ctk.CTkFrame(master=frame_main, height=40, fg_color=cor_subheader)
+rodape.pack(fill="x", side="bottom")
 
-btn_mais = tk.Button(rodape, text="Ver Mais", font=fonte_botao, bg=COR_HL, fg="white", relief="groove", padx=15, pady=5)
-btn_mais.pack(pady=20)
+btn_ver_mais = ctk.CTkButton(master=rodape, text="Ver Mais", fg_color="white", text_color="black", height=28, width=100)
+btn_ver_mais.pack(pady=5)
 
-# sair do app
-root.bind("<Escape>", lambda e: root.destroy())
-root.mainloop()
+# rodar o app
+app.mainloop()

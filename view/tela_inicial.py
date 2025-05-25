@@ -7,7 +7,7 @@ ctk.set_default_color_theme("blue")
 # start da tela principal
 app = ctk.CTk()
 app.title("Tela Inicial")
-app.state("zoomed")
+app.after(1, app.state, "zoomed")
 
 # consts cores
 cor_header = "#3c2e83"

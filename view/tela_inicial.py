@@ -3,6 +3,11 @@ import tkinter as tk
 from pyglet import font as pfont
 from os import path, listdir
 from PIL import Image
+import webbrowser
+
+def abrirlink():
+    link = "https://www.youtube.com/watch?v=BVNnRVOQ73Q"
+    webbrowser.open_new_tab(link)
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -68,93 +73,86 @@ subheader.pack(fill="x", side="top")
 
 # conteudo principal
 frame_conteudo = ctk.CTkFrame(master=frame_main, fg_color=cor_fundo)
-frame_conteudo.pack(fill="both", expand=True, pady=10, padx=60) # padx=60 aqui é a margem geral do conteúdo
+frame_conteudo.pack(fill="both", expand=True, pady=10, padx=60)
 
-# Configurar o grid dentro do frame_conteudo para ter duas colunas
-# Ajuste os 'weight' para mudar a proporção entre as colunas (ex: 1 e 1 para 50%/50%)
-frame_conteudo.grid_columnconfigure(0, weight=2)  # Coluna da esquerda (texto/botões)
-frame_conteudo.grid_columnconfigure(1, weight=3)  # Coluna da direita (imagem)
-frame_conteudo.grid_rowconfigure(0, weight=1)     # Linha única que expande verticalmente
+frame_conteudo.grid_columnconfigure(0, weight=2)
+frame_conteudo.grid_columnconfigure(1, weight=3)
+frame_conteudo.grid_rowconfigure(0, weight=1)
 
-# --- Coluna da Esquerda (Texto e Botões) ---
-frame_esquerda = ctk.CTkFrame(master=frame_conteudo, fg_color="transparent") # ou fg_color=cor_fundo
-frame_esquerda.grid(row=0, column=0, sticky="nsew", padx=(0, 20)) # sticky="nsew" faz o frame preencher a célula do grid
-                                                                  # padx=(0, 20) adiciona um espaço entre a coluna esquerda e direita
+frame_esquerda = ctk.CTkFrame(master=frame_conteudo, fg_color="transparent")
+frame_esquerda.grid(row=0, column=0, sticky="nsew", padx=(0, 20))
 
-# Frame intermediário para agrupar e centralizar verticalmente o título e os botões na frame_esquerda
 frame_esquerda_agrupador = ctk.CTkFrame(master=frame_esquerda, fg_color="transparent")
-# Para centralizar o agrupador na frame_esquerda:
-frame_esquerda.grid_rowconfigure(0, weight=1) # Linha de espaçamento acima
-frame_esquerda.grid_rowconfigure(1, weight=0) # Linha do conteúdo (não expande, tamanho próprio)
-frame_esquerda.grid_rowconfigure(2, weight=1) # Linha de espaçamento abaixo
-frame_esquerda.grid_columnconfigure(0, weight=1) # Coluna única para o conteúdo
-frame_esquerda_agrupador.grid(row=1, column=0, sticky="w") # Coloca o agrupador na linha do meio, alinhado à esquerda (west)
+frame_esquerda.grid_rowconfigure(0, weight=1)
+frame_esquerda.grid_rowconfigure(1, weight=0)
+frame_esquerda.grid_rowconfigure(2, weight=1)
+frame_esquerda.grid_columnconfigure(0, weight=1)
+frame_esquerda_agrupador.grid(row=1, column=0, sticky="w")
 
 
-titulo = ctk.CTkLabel(master=frame_esquerda_agrupador, # Master é o frame agrupador
+titulo = ctk.CTkLabel(master=frame_esquerda_agrupador,
                       text="Construa\nseu império\ncomeçando do\ncompleto zero",
                       font=ctk.CTkFont(family="Roboto-Black", size=120, weight="bold"),
                       justify="left",
-                      anchor="w") # Garante que o texto dentro do label esteja à esquerda
-titulo.pack(side="top", anchor="w", pady=(0, 30), padx=0) # pady=(0,30) para dar espaço antes dos botões
+                      anchor="w")
+titulo.pack(side="top", anchor="w", pady=(0, 30), padx=0)
 
-# Container para os botões de ação
-frame_botoes = ctk.CTkFrame(master=frame_esquerda_agrupador, fg_color="transparent") # Master é o frame agrupador
+frame_botoes = ctk.CTkFrame(master=frame_esquerda_agrupador, fg_color="transparent")
 frame_botoes.pack(side="top", anchor="w", pady=(0, 0), padx=0)
 
 btn_entrar = ctk.CTkButton(master=frame_botoes, width=250, height=75,
                            text="ENTRE AGORA",
                            fg_color=cor_clara, text_color="black",
-                           font=ctk.CTkFont(family="Roboto-Bold", size=22, weight="bold"))
-btn_entrar.pack(side="left", padx=(0, 20)) # Espaço à direita do botão "ENTRE AGORA"
+                           font=ctk.CTkFont(family="Roboto-Bold", size=22, weight="bold")
+                           )
+btn_entrar.pack(side="left", padx=(0, 20))
 
 btn_trailer = ctk.CTkButton(master=frame_botoes, width=250, height=75,
                             text="▶ VEJA O TRAILER",
                             fg_color=cor_azul,
-                            font=ctk.CTkFont(family="Roboto-Bold", size=22, weight="bold"))
+                            font=ctk.CTkFont(family="Roboto-Bold", size=22, weight="bold"),
+                            command=abrirlink
+                            )
 btn_trailer.pack(side="left", padx=0)
 
-
-# --- Coluna da Direita (Imagem) ---
-frame_direita = ctk.CTkFrame(master=frame_conteudo, fg_color="transparent") # ou fg_color=cor_fundo
+frame_direita = ctk.CTkFrame(master=frame_conteudo, fg_color="transparent")
 frame_direita.grid(row=0, column=1, sticky="nsew", padx=(0, 0))
 
-# Carregar e exibir a imagem do porquinho
-# Substitua "porquinho.png" pelo nome exato do seu arquivo de imagem.
-# A imagem deve estar na pasta definida por path_imgs (ex: "images/porquinho.png")
-nome_arquivo_imagem = "porquinhoDinheiro.png" # <<-- COLOQUE O NOME CORRETO DO SEU ARQUIVO AQUI
+nome_arquivo_imagem = "porquinhoDinheiro.png"
 path_imagem_porquinho = path.join(path_imgs, nome_arquivo_imagem)
 
 try:
     pil_original_image = Image.open(path_imagem_porquinho)
 
-    # Redimensionar a imagem para um tamanho adequado (opcional, mas recomendado)
-    # Você pode ajustar 'img_altura_desejada' conforme necessário
-    img_altura_desejada = 800  # Altura em pixels que a imagem terá na tela
+    img_altura_desejada = 800
     
     original_width, original_height = pil_original_image.size
     aspect_ratio = original_width / float(original_height)
-    img_largura_calculada = int(img_altura_desejada * aspect_ratio)
+    img_larg_calc = int(img_altura_desejada * aspect_ratio)
 
-    pil_resized_image = pil_original_image.resize((img_largura_calculada, img_altura_desejada), Image.Resampling.LANCZOS)
+    pil_resized_image = pil_original_image.resize((img_larg_calc, img_altura_desejada), Image.Resampling.LANCZOS)
     
     ctk_porquinho_image = ctk.CTkImage(light_image=pil_resized_image,
                                        dark_image=pil_resized_image,
-                                       size=(img_largura_calculada, img_altura_desejada))
+                                       size=(img_larg_calc, img_altura_desejada)
+                                       )
     
     label_imagem_porquinho = ctk.CTkLabel(master=frame_direita, image=ctk_porquinho_image, text="")
-    label_imagem_porquinho.pack(anchor="center", expand=True, padx=20, pady=20) # Centraliza a imagem na frame_direita
+    label_imagem_porquinho.pack(anchor="center", expand=True, padx=20, pady=20)
 
 except FileNotFoundError:
-    print(f"Erro: Imagem '{path_imagem_porquinho}' não encontrada.")
+    print(f"ERRO Imagem '{path_imagem_porquinho}' não encontrada.")
     label_erro_imagem = ctk.CTkLabel(master=frame_direita, text=f"Imagem não encontrada:\n{nome_arquivo_imagem}",
-                                     font=ctk.CTkFont(family="Roboto", size=16))
+                                     font=ctk.CTkFont(family="Roboto-Regular", size=16)
+                                     )
     label_erro_imagem.pack(anchor="center", expand=True)
 except Exception as e:
     print(f"Erro ao carregar imagem: {e}")
     label_erro_imagem = ctk.CTkLabel(master=frame_direita, text="Erro ao carregar imagem.",
-                                     font=ctk.CTkFont(family="Roboto", size=16))
+                                     font=ctk.CTkFont(family="Roboto-Regular", size=16)
+                                     )
     label_erro_imagem.pack(anchor="center", expand=True)
+
 # footer
 
 rodape = ctk.CTkFrame(master=frame_main, height=100, fg_color=cor_subheader)

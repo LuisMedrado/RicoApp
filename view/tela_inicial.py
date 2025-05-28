@@ -1,27 +1,33 @@
 import customtkinter as ctk
-import tkinter as tk
+# import tkinter as tk
 from pyglet import font as pfont
 from os import path, listdir
 from PIL import Image
 import webbrowser
 
+# func pra abrir link
 def abrirlink():
-    link = "https://www.youtube.com/watch?v=BVNnRVOQ73Q"
+    """Nesses trajes, quem vai desconfiar?"""
+    link = "https://www.youtube.com/watch?v=30del_ojFfs"
     webbrowser.open_new_tab(link)
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
+# func pra abrir outra tela
+
+##################### TEM QUE IMPLEMENTAR
+
 # diretorios
-dir_tela = path.dirname(__file__)
-path_fonts = path.join(dir_tela, "fonts")
-path_imgs = path.join(dir_tela, "images")
+DIR_TELA = path.dirname(__file__)
+PATH_FONTS = path.join(DIR_TELA, "fonts")
+PATH_IMGS = path.join(DIR_TELA, "images")
 
 # carregar fontes da pasta fonts
 try:
-    for nome_arq in listdir(path_fonts):
+    for nome_arq in listdir(PATH_FONTS):
         if nome_arq.lower().endswith(".ttf"):
-            nome_fonte = path.join(path_fonts, nome_arq)
+            nome_fonte = path.join(PATH_FONTS, nome_arq)
             pfont.add_file(nome_fonte)
 except Exception as e:
     print(f"Erro ao carregar fonte: {e}")
@@ -32,31 +38,31 @@ app.title("Tela Inicial")
 app.after(1, app.state, "zoomed")
 
 # consts cores
-cor_header = "#3f2a87"
-cor_subheader = "#7a6ef5"
-cor_fundo = "#2d234d"
-cor_clara = "#e6e6f0"
-cor_azul = "#7a6ef5"
+COR_HEADER = "#3f2a87"
+COR_SUBHEADER = "#7a6ef5"
+COR_FUNDO = "#2d234d"
+COR_CLARA = "#e6e6f0"
+COR_AZUL = "#7a6ef5"
 
 # fontes
 roboto_padrao = ctk.CTkFont(family="Roboto")
 
 # container geral
-frame_main = ctk.CTkFrame(master=app, fg_color=cor_fundo)
+frame_main = ctk.CTkFrame(master=app, fg_color=COR_FUNDO)
 frame_main.pack(fill="both", expand=True)
 
 # header
-header = ctk.CTkFrame(master=frame_main, height=60, fg_color=cor_header)
+header = ctk.CTkFrame(master=frame_main, height=60, fg_color=COR_HEADER)
 header.pack(fill="x", side="top")
 
-frame_menu = ctk.CTkFrame(master=header, fg_color=cor_header)
+frame_menu = ctk.CTkFrame(master=header, fg_color=COR_HEADER)
 frame_menu.pack(side="right", padx=20, pady=15)
 
-btn_sobre = ctk.CTkButton(master=frame_menu, text="Sobre", fg_color="transparent", hover_color=cor_azul,
+btn_sobre = ctk.CTkButton(master=frame_menu, text="Sobre", fg_color="transparent", hover_color=COR_AZUL,
                           font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold")
                           )
 btn_login = ctk.CTkButton(master=frame_menu, text="Login", fg_color="transparent", border_color="white",
-                          border_width=2, hover_color=cor_azul,
+                          border_width=2, hover_color=COR_AZUL,
                           font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold")
                           )
 btn_cadastro = ctk.CTkButton(master=frame_menu, text="Cadastre-se", fg_color="white", text_color="black",
@@ -68,11 +74,11 @@ btn_login.pack(side="left", padx=5)
 btn_cadastro.pack(side="left", padx=5)
 
 # faixa cor diferente
-subheader = ctk.CTkFrame(master=frame_main, height=50, fg_color=cor_subheader)
+subheader = ctk.CTkFrame(master=frame_main, height=50, fg_color=COR_SUBHEADER)
 subheader.pack(fill="x", side="top")
 
 # conteudo principal
-frame_conteudo = ctk.CTkFrame(master=frame_main, fg_color=cor_fundo)
+frame_conteudo = ctk.CTkFrame(master=frame_main, fg_color=COR_FUNDO)
 frame_conteudo.pack(fill="both", expand=True, pady=10, padx=60)
 
 frame_conteudo.grid_columnconfigure(0, weight=2)
@@ -102,14 +108,14 @@ frame_botoes.pack(side="top", anchor="w", pady=(0, 0), padx=0)
 
 btn_entrar = ctk.CTkButton(master=frame_botoes, width=250, height=75,
                            text="ENTRE AGORA",
-                           fg_color=cor_clara, text_color="black",
+                           fg_color=COR_CLARA, text_color="black",
                            font=ctk.CTkFont(family="Roboto-Bold", size=22, weight="bold")
                            )
 btn_entrar.pack(side="left", padx=(0, 20))
 
 btn_trailer = ctk.CTkButton(master=frame_botoes, width=250, height=75,
                             text="▶ VEJA O TRAILER",
-                            fg_color=cor_azul,
+                            fg_color=COR_AZUL,
                             font=ctk.CTkFont(family="Roboto-Bold", size=22, weight="bold"),
                             command=abrirlink
                             )
@@ -119,7 +125,7 @@ frame_direita = ctk.CTkFrame(master=frame_conteudo, fg_color="transparent")
 frame_direita.grid(row=0, column=1, sticky="nsew", padx=(0, 0))
 
 nome_arquivo_imagem = "porquinhoDinheiro.png"
-path_imagem_porquinho = path.join(path_imgs, nome_arquivo_imagem)
+path_imagem_porquinho = path.join(PATH_IMGS, nome_arquivo_imagem)
 
 try:
     pil_original_image = Image.open(path_imagem_porquinho)
@@ -155,7 +161,7 @@ except Exception as e:
 
 # footer
 
-rodape = ctk.CTkFrame(master=frame_main, height=100, fg_color=cor_subheader)
+rodape = ctk.CTkFrame(master=frame_main, height=100, fg_color=COR_SUBHEADER)
 rodape.pack(fill="x", side="bottom")
 
  ############ AVALIAR NECESSIDADE DESSE BOTAO AQUI

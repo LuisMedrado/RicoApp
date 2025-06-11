@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import tela_inicial as modulo_inicial
 from os import path, listdir
+from PIL import Image
 from pyglet import font as pfont
 
 DIR_TELA = path.dirname(__file__)
@@ -14,6 +15,32 @@ COR_TEXTO = "#E6E6F0"
 COR_PESQUISA = "#E6E6F0"
 
 modulo_inicial.carregar_fontes_globais()
+
+def carregar_img(parent_frame, nome_img, tamanho, ancoragem):
+        nome_arquivo_imagem = nome_img
+        path_img = path.join(PATH_IMGS, nome_arquivo_imagem)
+        try:
+            pil_original_image = Image.open(path_img)
+            max_altura = tamanho
+            original_width, original_height = pil_original_image.size
+            aspect_ratio = original_width / float(original_height)
+
+            img_altura_calc = max_altura
+            img_larg_calc = int(img_altura_calc * aspect_ratio)
+
+            pil_resized_image = pil_original_image.resize((img_larg_calc, img_altura_calc), Image.Resampling.LANCZOS)
+
+            ctk_porquinho_image = ctk.CTkImage(light_image=pil_resized_image,
+                                               dark_image=pil_resized_image,
+                                               size=(img_larg_calc, img_altura_calc))
+
+            label_img = ctk.CTkLabel(parent_frame, image=ctk_porquinho_image, text="")
+            label_img.pack(anchor=ancoragem, pady=(5, 15))
+        except FileNotFoundError:
+            print(f"ERRO imagem '{path_img}' não encontrada.")
+
+        except Exception as e:
+            print(f"Erro ao carregar imagem: {e}")
 
 class telaInicialFrame(ctk.CTk):
     def __init__(self):
@@ -41,10 +68,9 @@ class telaInicialFrame(ctk.CTk):
         header.pack(fill="x", side="top", pady=(0, 20))
 
         menu_icon = ctk.CTkLabel(header, text="☰", font=(ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold"), 22))
-        menu_icon.pack(side="left", padx=(10, 0), pady=15)
+        menu_icon.pack(side="left", padx=(25, 0), pady=15)
 
-        title_label = ctk.CTkLabel(header, text="RICO", font=(ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold"), 24, "bold"))
-        title_label.pack(side="left", padx=10, pady=15)
+        carregar_img(header, "ricoIconVertical.png", 60, "w")
 
         # barra de pesquisa
 

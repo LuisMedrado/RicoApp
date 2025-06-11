@@ -10,8 +10,8 @@ PATH_IMGS = path.join(DIR_TELA, "images")
 COR_HEADER = "#3f2a87"
 COR_SUBHEADER = "#7a6ef5"
 COR_FUNDO = "#2d234d"
-COR_TEXTO = "#e6e6f0"
-COR_PESQUISA = "#4A4472"
+COR_TEXTO = "#E6E6F0"
+COR_PESQUISA = "#E6E6F0"
 
 modulo_inicial.carregar_fontes_globais()
 

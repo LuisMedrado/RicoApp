@@ -54,6 +54,8 @@ class telaInicialFrame(ctk.CTkFrame):
 
         frame_menu = ctk.CTkFrame(header, fg_color="transparent")
         frame_menu.pack(side="right", padx=20, pady=(10,10))
+        
+        self.carregar_img(header, "ricoIconVertical.png", 50, "w")
 
         btn_sobre = ctk.CTkButton(frame_menu, text="Sobre", fg_color="transparent", hover_color=COR_AZUL,
                                   font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold"))
@@ -75,7 +77,7 @@ class telaInicialFrame(ctk.CTkFrame):
 
         # conteudo principal
         frame_conteudo = ctk.CTkFrame(self, fg_color="transparent")
-        frame_conteudo.pack(fill="both", expand=True, pady=20, padx=60)
+        frame_conteudo.pack(fill="both", expand=True, padx=60)
 
         frame_conteudo.grid_columnconfigure(0, weight=2, uniform="group1")
         frame_conteudo.grid_columnconfigure(1, weight=3, uniform="group1")
@@ -119,7 +121,7 @@ class telaInicialFrame(ctk.CTkFrame):
         # frame direita
         frame_direita = ctk.CTkFrame(frame_conteudo, fg_color="transparent")
         frame_direita.grid(row=0, column=1, sticky="nsew", padx=(10,0))
-        self.carregar_img(frame_direita)
+        self.carregar_img(frame_direita, "porquinhoDinheiro.png", 925, "center")
 
         # footer
         rodape = ctk.CTkFrame(self, height=80, fg_color=COR_SUBHEADER, corner_radius=0)
@@ -128,13 +130,12 @@ class telaInicialFrame(ctk.CTkFrame):
                                     font=ctk.CTkFont(family="Roboto-Regular", size=12), text_color=COR_CLARA)
         label_footer.pack(expand=True)
 
-
-    def carregar_img(self, parent_frame):
-        nome_arquivo_imagem = "porquinhoDinheiro.png"
+    def carregar_img(self, parent_frame, nome_img, tamanho, ancoragem):
+        nome_arquivo_imagem = nome_img
         path_img = path.join(PATH_IMGS, nome_arquivo_imagem)
         try:
             pil_original_image = Image.open(path_img)
-            max_altura = 925
+            max_altura = tamanho
             original_width, original_height = pil_original_image.size
             aspect_ratio = original_width / float(original_height)
 
@@ -148,7 +149,7 @@ class telaInicialFrame(ctk.CTkFrame):
                                                size=(img_larg_calc, img_altura_calc))
 
             label_img = ctk.CTkLabel(parent_frame, image=ctk_porquinho_image, text="")
-            label_img.pack(anchor="center", expand=True, padx=20, pady=20)
+            label_img.pack(anchor=ancoragem, expand=True, padx=20, pady=20)
         except FileNotFoundError:
             print(f"ERRO imagem '{path_img}' não encontrada.")
 

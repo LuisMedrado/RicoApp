@@ -76,6 +76,8 @@ class TelaCadastro(ctk.CTkFrame):
         )
         self.input_senha.grid(row=4, column=0, pady=10)
 
+        
+
     def criar_componentes_explicativos(self):
         self.titulo_explicativo = ctk.CTkLabel(
             self.frame_explicativo,

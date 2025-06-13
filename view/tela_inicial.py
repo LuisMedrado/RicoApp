@@ -6,7 +6,6 @@ import webbrowser
 
 # importar a classe das telas
 from tela_login import telaLoginFrame
-from tela_cadastro import telaCadastro
 
 # consts cores
 DIR_TELA = path.dirname(__file__)

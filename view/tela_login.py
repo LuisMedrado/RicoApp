@@ -38,11 +38,3 @@ class telaLoginFrame(ctk.CTkFrame):
 
 
 
-
-janela = ctk.CTk()
-janela.title("Tela Login")
-
-tela_login = telaLoginFrame(janela, None)
-tela_login.pack(fill="both", expand=True)
-
-janela.mainloop()

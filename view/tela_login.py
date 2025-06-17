@@ -67,11 +67,12 @@ class telaLoginFrame(ctk.CTkFrame):
         frame_info.grid_rowconfigure(2, weight=1)
 
         # Imagem decorativa superior esquerda
-        img_top = ImageTk.PhotoImage(Image.open(os.path.join(PATH_IMGS, "carrossel.png")).resize((500, 500)))
+        img_top = ctk.CTkImage(Image.open(os.path.join(PATH_IMGS, "carrossel.png")), size=(300, 300))
         ctk.CTkLabel(frame_info, image=img_top, text="").place(x=0, y=0)
 
+
         # Personagem central
-        img_personagem = ctk.CTkImage(Image.open(os.path.join(PATH_IMGS, "Pessoa_Login.png")), size=(380, 380))
+        img_personagem = ctk.CTkImage(Image.open(os.path.join(PATH_IMGS, "Pessoa_Login.png")), size=(560, 670))
         ctk.CTkLabel(frame_info, image=img_personagem, text="").grid(row=1, column=0)
 
         # Frame para os textos alinhados à esquerda com pequeno espaçamento
@@ -89,5 +90,5 @@ class telaLoginFrame(ctk.CTkFrame):
                      justify="left").pack(anchor="w")
 
         # Imagem decorativa inferior direita
-        img_bot = ImageTk.PhotoImage(Image.open(os.path.join(PATH_IMGS, "Group 13.png")).resize((300, 180)))
+        img_bot = ctk.CTkImage(Image.open(os.path.join(PATH_IMGS, "Group 13.png")), size=(300, 180))
         ctk.CTkLabel(frame_info, image=img_bot, text="").place(relx=1.0, rely=1.0, anchor="se")

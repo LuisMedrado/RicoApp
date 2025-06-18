@@ -4,9 +4,14 @@ import tkinter as tk
 from PIL.ImageChops import darker
 from PIL import Image, ImageTk
 from pyglet import image
+from os import path
 
 COR_FUNDO_ESCURA = "#2d234d"
 COR_FUNDO_CLARA = "#786AAB"
+
+DIR_TELA = path.dirname(__file__)
+PATH_IMGS = path.join(DIR_TELA, "images")
+
 
 class TelaCadastro(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -32,8 +37,7 @@ class TelaCadastro(ctk.CTkFrame):
 
 
         self.logo_imagem = ctk.CTkImage(
-            light_image=Image.open("images/ricoIcon.png"),
-            dark_image = Image.open("images/ricoIcon.png"),
+            Image.open(path.join(PATH_IMGS, "ricoIcon.png")),
             size=(258,258)
         )
 

@@ -9,7 +9,6 @@ COR_DESTAQUE = "#F4C326"
 DIR_TELA = path.dirname(__file__)
 PATH_IMGS = path.join(DIR_TELA, "images")
 
-
 class telaLoginFrame(ctk.CTkFrame):
     def __init__(self, parent_container, controller, **kwargs):
         super().__init__(parent_container, **kwargs)
@@ -30,8 +29,11 @@ class telaLoginFrame(ctk.CTkFrame):
     def criar_componentes_cadastro(self):
         self.frame_cadastro.grid_columnconfigure(0, weight=1)
 
+        # NOVO: Use o caminho absoluto para carregar as imagens
+        caminho_logo = Image.open(path.join(PATH_IMGS, "ricoIcon.png"))
         self.logo_imagem = ctk.CTkImage(
-            Image.open(path.join(PATH_IMGS, "ricoIcon.png")),
+            light_image=caminho_logo,
+            dark_image=caminho_logo,
             size=(258, 258)
         )
 
@@ -130,10 +132,19 @@ class App(ctk.CTk):
         super().__init__()
         self.title("Login")
 
-        self.after(0, lambda: self.state('zoomed'))
+        # Corrigido para funcionar em diferentes sistemas operacionais
+        try:
+            self.state('zoomed')
+        except ctk.TclError:  # Em alguns sistemas (Linux/macOS) 'zoomed' pode não funcionar
+            self.attributes('-fullscreen', True)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.tela_cadastro = telaLoginFrame(self)
+        self.tela_cadastro = telaLoginFrame(self, controller=self)  # Passando 'self' como controller
         self.tela_cadastro.grid(row=0, column=0, sticky="nsew")
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()

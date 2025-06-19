@@ -14,7 +14,7 @@ def reviewsModel():
                     id INTEGER PRIMARY KEY,
                     estrelas INTEGER NOT NULL,
                     review TEXT,
-                    média_estrelas REAL NOT NULL,
+                    média_estrelas REAL NOT NULL
                 )
             ''')
             conn.commit()

@@ -3,14 +3,18 @@ from pyglet import font as pfont
 from os import path, listdir
 from PIL import Image
 import webbrowser
-from db import get_db_connection
+from view.db import get_db_connection
 from model.login.usuarioModel import usuarioModel
 from model.artigosModel import artigosModel
 from model.jogoModel import jogoModel
 from model.reviewModel import reviewsModel
+import sys
 
 # importar a classe das telas
-from tela_login import telaLoginFrame
+from view.tela_login import telaLoginFrame
+
+# adicionar as outras pastas ao path
+sys.path.append(path.abspath(path.join(path.dirname(__file__), '..')))
 
 # consts cores
 DIR_TELA = path.dirname(__file__)
@@ -206,8 +210,7 @@ class appPrincipal(ctk.CTk):
         else:
             print(f"Erro: frame para a classe {classe_frame_alvo} não encontrado")
 
-
-if __name__ == "__main__":
+def iniciar_app():
     app = appPrincipal()
     app.mainloop()
     get_db_connection()
@@ -215,3 +218,4 @@ if __name__ == "__main__":
     artigosModel()
     jogoModel()
     reviewsModel()
+

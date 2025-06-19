@@ -16,7 +16,7 @@ def usuarioModel():
                     email TEXT NOT NULL,
                     senha TEXT NOT NULL,
                     saldo REAL,
-                    tipo_de_investidor TEXT,
+                    tipo_de_investidor TEXT
                 )
             ''')
             conn.commit()

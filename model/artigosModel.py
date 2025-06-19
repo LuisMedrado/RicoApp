@@ -15,7 +15,7 @@ def artigosModel():
                     título TEXT NOT NULL,
                     autor_artigo TEXT NOT NULL,
                     data_artigo DATE NOT NULL,
-                    conteudo_artigo TEXT NOT NULL,
+                    conteudo_artigo TEXT NOT NULL
                 )
             ''')
             conn.commit()

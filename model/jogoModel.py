@@ -16,7 +16,7 @@ def jogoModel():
                     custo REAL NOT NULL,
                     valor REAL NOT NULL,
                     investidores INTEGER NOT NULL,
-                    meses TEXT NOT NULL,
+                    meses TEXT NOT NULL
                 )
             ''')
             conn.commit()

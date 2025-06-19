@@ -13,7 +13,9 @@ def artigosModel():
                 CREATE TABLE IF NOT EXISTS artigos (
                     id INTEGER PRIMARY KEY,
                     título TEXT NOT NULL,
-                    link,
+                    autor_artigo TEXT NOT NULL,
+                    data_artigo DATE NOT NULL,
+                    conteudo_artigo TEXT NOT NULL,
                 )
             ''')
             conn.commit()

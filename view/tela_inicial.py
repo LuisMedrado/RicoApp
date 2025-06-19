@@ -3,8 +3,11 @@ from pyglet import font as pfont
 from os import path, listdir
 from PIL import Image
 import webbrowser
-import sqlite3
-from db import get_db_connection, close_db_connection
+from db import get_db_connection
+from model.login.usuarioModel import usuarioModel
+from model.artigosModel import artigosModel
+from model.jogoModel import jogoModel
+from model.reviewModel import reviewsModel
 
 # importar a classe das telas
 from tela_login import telaLoginFrame
@@ -208,4 +211,7 @@ if __name__ == "__main__":
     app = appPrincipal()
     app.mainloop()
     get_db_connection()
-
+    usuarioModel()
+    artigosModel()
+    jogoModel()
+    reviewsModel()

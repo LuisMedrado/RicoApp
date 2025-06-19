@@ -1,5 +1,3 @@
-from unittest.mock import right
-
 import customtkinter as ctk
 from PIL import Image
 
@@ -98,11 +96,8 @@ class TelaCadastro(ctk.CTkFrame):
         )
         self.new_user_button.grid(row=7, column=0, pady=10)
 
-    
     def criar_componentes_explicativos(self):
-
         imagem_final = Image.open("images/teste4.png")
-
 
         self.layout_completo_img = ctk.CTkImage(
             light_image=imagem_final,
@@ -116,7 +111,6 @@ class TelaCadastro(ctk.CTkFrame):
             text="",
             fg_color="transparent"
         )
-
 
         self.layout_completo_label.place(x=0, y=0)
 

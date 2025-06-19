@@ -6,9 +6,9 @@ COR_FUNDO_CLARA = "#3F2A87"
 COR_DESTAQUE = "#F4C326"
 
 
-class TelaCadastro(ctk.CTkFrame):
-    def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)
+class telaLoginFrame(ctk.CTkFrame):
+    def __init__(self, parent_container, controller, **kwargs):
+        super().__init__(parent_container, **kwargs)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -125,10 +125,5 @@ class App(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.tela_cadastro = TelaCadastro(self)
+        self.tela_cadastro = telaLoginFrame(self)
         self.tela_cadastro.grid(row=0, column=0, sticky="nsew")
-
-
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()

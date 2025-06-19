@@ -19,6 +19,7 @@ COR_FUNDO = "#2d234d"
 COR_CLARA = "#e6e6f0"
 COR_AZUL = "#7a6ef5"
 
+
 # carregar fontes
 def carregar_fontes_globais():
     try:
@@ -31,6 +32,7 @@ def carregar_fontes_globais():
         print(f"ERRO: Diretório de fontes '{PATH_FONTS}' não encontrado.")
     except Exception as e:
         print(f"Erro ao carregar fontes: {e}")
+
 
 # funcs
 def abrirLink():
@@ -52,8 +54,8 @@ class telaInicialFrame(ctk.CTkFrame):
         header.pack(fill="x", side="top")
 
         frame_menu = ctk.CTkFrame(header, fg_color="transparent")
-        frame_menu.pack(side="right", padx=20, pady=(10,10))
-        
+        frame_menu.pack(side="right", padx=20, pady=(10, 10))
+
         self.carregar_img(header, "ricoIconVertical.png", 50, "w")
 
         btn_sobre = ctk.CTkButton(frame_menu, text="Sobre", fg_color="transparent", hover_color=COR_AZUL,
@@ -61,11 +63,11 @@ class telaInicialFrame(ctk.CTkFrame):
         btn_login = ctk.CTkButton(frame_menu, text="Login", fg_color="transparent", border_color="white",
                                   border_width=2, hover_color=COR_AZUL,
                                   font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold"),
-                                  command=lambda: controller.mostrar_frame(telaLoginFrame)) # NAVEGAÇÃO
+                                  command=lambda: controller.mostrar_frame(telaLoginFrame))  # NAVEGAÇÃO
         btn_cadastro = ctk.CTkButton(frame_menu, text="Cadastre-se", fg_color="white", text_color="black",
                                      hover_color="#d4d4d4",
                                      font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold"))
-                                     # adicionar: command=lambda: controller.mostrar_frame(TelaCadastroFrame))
+        # adicionar: command=lambda: controller.mostrar_frame(TelaCadastroFrame))
 
         btn_sobre.pack(side="left", padx=5)
         btn_login.pack(side="left", padx=5)
@@ -91,7 +93,6 @@ class telaInicialFrame(ctk.CTkFrame):
 
         frame_esquerda_agrupador_inner = ctk.CTkFrame(frame_esquerda_agrupador_outer, fg_color="transparent")
         frame_esquerda_agrupador_inner.pack(pady=20)
-
 
         titulo = ctk.CTkLabel(frame_esquerda_agrupador_inner,
                               text="Construa\nseu império\ncomeçando do\ncompleto zero",
@@ -119,13 +120,14 @@ class telaInicialFrame(ctk.CTkFrame):
 
         # frame direita
         frame_direita = ctk.CTkFrame(frame_conteudo, fg_color="transparent")
-        frame_direita.grid(row=0, column=1, sticky="nsew", padx=(10,0))
+        frame_direita.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
         self.carregar_img(frame_direita, "porquinhoDinheiro.png", 925, "center")
 
         # footer
         rodape = ctk.CTkFrame(self, height=80, fg_color=COR_SUBHEADER, corner_radius=0)
         rodape.pack(fill="x", side="bottom")
-        label_footer = ctk.CTkLabel(rodape, text="2025, RICO App. Projeto para a disciplina de Novas Tecnologias | UCB.",
+        label_footer = ctk.CTkLabel(rodape,
+                                    text="2025, RICO App. Projeto para a disciplina de Novas Tecnologias | UCB.",
                                     font=ctk.CTkFont(family="Roboto-Regular", size=12), text_color=COR_CLARA)
         label_footer.pack(expand=True)
 
@@ -154,6 +156,7 @@ class telaInicialFrame(ctk.CTkFrame):
 
         except Exception as e:
             print(f"Erro ao carregar imagem: {e}")
+
 
 # classe principal
 class appPrincipal(ctk.CTk):
@@ -198,8 +201,8 @@ class appPrincipal(ctk.CTk):
         else:
             print(f"Erro: frame para a classe {classe_frame_alvo} não encontrado")
 
+
 if __name__ == "__main__":
     app = appPrincipal()
     app.mainloop()
 
-    

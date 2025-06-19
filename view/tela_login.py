@@ -1,9 +1,13 @@
 import customtkinter as ctk
 from PIL import Image
+from pathlib import Path
 
 COR_FUNDO_ESCURA = "#1E1B2E"
 COR_FUNDO_CLARA = "#3F2A87"
 COR_DESTAQUE = "#F4C326"
+
+
+CAMINHO_IMAGENS = Path(__file__).parent / "images"
 
 
 class telaLoginFrame(ctk.CTkFrame):
@@ -26,9 +30,11 @@ class telaLoginFrame(ctk.CTkFrame):
     def criar_componentes_cadastro(self):
         self.frame_cadastro.grid_columnconfigure(0, weight=1)
 
+        # NOVO: Use o caminho absoluto para carregar as imagens
+        caminho_logo = CAMINHO_IMAGENS / "ricoIcon.png"
         self.logo_imagem = ctk.CTkImage(
-            light_image=Image.open("images/ricoIcon.png"),
-            dark_image=Image.open("images/ricoIcon.png"),
+            light_image=Image.open(caminho_logo),
+            dark_image=Image.open(caminho_logo),
             size=(258, 258)
         )
 
@@ -97,7 +103,8 @@ class telaLoginFrame(ctk.CTkFrame):
         self.new_user_button.grid(row=7, column=0, pady=10)
 
     def criar_componentes_explicativos(self):
-        imagem_final = Image.open("images/teste4.png")
+        # NOVO: Use o caminho absoluto para carregar a imagem
+        imagem_final = Image.open(CAMINHO_IMAGENS / "teste4.png")
 
         self.layout_completo_img = ctk.CTkImage(
             light_image=imagem_final,
@@ -120,10 +127,19 @@ class App(ctk.CTk):
         super().__init__()
         self.title("Login")
 
-        self.after(0, lambda: self.state('zoomed'))
+        # Corrigido para funcionar em diferentes sistemas operacionais
+        try:
+            self.state('zoomed')
+        except ctk.TclError:  # Em alguns sistemas (Linux/macOS) 'zoomed' pode não funcionar
+            self.attributes('-fullscreen', True)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.tela_cadastro = telaLoginFrame(self)
+        self.tela_cadastro = telaLoginFrame(self, controller=self)  # Passando 'self' como controller
         self.tela_cadastro.grid(row=0, column=0, sticky="nsew")
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()

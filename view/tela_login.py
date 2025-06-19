@@ -1,14 +1,13 @@
 import customtkinter as ctk
 from PIL import Image
-from pathlib import Path
+from os import path
 
 COR_FUNDO_ESCURA = "#1E1B2E"
 COR_FUNDO_CLARA = "#3F2A87"
 COR_DESTAQUE = "#F4C326"
 
-
-CAMINHO_IMAGENS = Path(__file__).parent / "images"
-
+DIR_TELA = path.dirname(__file__)
+PATH_IMGS = path.join(DIR_TELA, "images")
 
 class telaLoginFrame(ctk.CTkFrame):
     def __init__(self, parent_container, controller, **kwargs):
@@ -31,10 +30,10 @@ class telaLoginFrame(ctk.CTkFrame):
         self.frame_cadastro.grid_columnconfigure(0, weight=1)
 
         # NOVO: Use o caminho absoluto para carregar as imagens
-        caminho_logo = CAMINHO_IMAGENS / "ricoIcon.png"
+        caminho_logo = Image.open(path.join(PATH_IMGS, "ricoIcon.png"))
         self.logo_imagem = ctk.CTkImage(
-            light_image=Image.open(caminho_logo),
-            dark_image=Image.open(caminho_logo),
+            light_image=caminho_logo,
+            dark_image=caminho_logo,
             size=(258, 258)
         )
 
@@ -103,13 +102,20 @@ class telaLoginFrame(ctk.CTkFrame):
         self.new_user_button.grid(row=7, column=0, pady=10)
 
     def criar_componentes_explicativos(self):
-        # NOVO: Use o caminho absoluto para carregar a imagem
-        imagem_final = Image.open(CAMINHO_IMAGENS / "teste4.png")
+        imagem_final = Image.open(path.join(PATH_IMGS, "teste4.png"))
+
+        # get da largura e altura da tela, ajustadas para caber no espaço disponível pra imagem
+        largura_tela = (self.winfo_screenwidth() / 1.7)
+        altura_tela = (self.winfo_screenheight() * 1.1)
+
+        # ajuste de tamanho da imagem
+        largura_img = int(largura_tela * 0.8)
+        altura_img = int(altura_tela * 0.9)
 
         self.layout_completo_img = ctk.CTkImage(
             light_image=imagem_final,
             dark_image=imagem_final,
-            size=(920, 1080)
+            size=(largura_img, altura_img)
         )
 
         self.layout_completo_label = ctk.CTkLabel(

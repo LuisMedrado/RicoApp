@@ -6,6 +6,7 @@ from PIL.ImageChops import darker
 from PIL import Image, ImageTk
 from pyglet import image
 from os import path
+from model.login.usuarioModel import usuarioModel
 
 COR_FUNDO_ESCURA = "#1E1B2E"
 COR_FUNDO_CLARA = "#3F2A87"
@@ -85,4 +86,5 @@ class App(ctk.CTk):
 if __name__ == "__main__":
     app = App()
     app.mainloop()
+    usuarioModel()
 

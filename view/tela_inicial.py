@@ -3,6 +3,8 @@ from pyglet import font as pfont
 from os import path, listdir
 from PIL import Image
 import webbrowser
+import sqlite3
+from db import get_db_connection, close_db_connection
 
 # importar a classe das telas
 from tela_login import telaLoginFrame
@@ -205,4 +207,5 @@ class appPrincipal(ctk.CTk):
 if __name__ == "__main__":
     app = appPrincipal()
     app.mainloop()
+    get_db_connection()
 

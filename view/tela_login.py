@@ -1,9 +1,13 @@
 import customtkinter as ctk
 from PIL import Image
+from os import path
 
 COR_FUNDO_ESCURA = "#1E1B2E"
 COR_FUNDO_CLARA = "#3F2A87"
 COR_DESTAQUE = "#F4C326"
+
+DIR_TELA = path.dirname(__file__)
+PATH_IMGS = path.join(DIR_TELA, "images")
 
 
 class telaLoginFrame(ctk.CTkFrame):
@@ -27,8 +31,7 @@ class telaLoginFrame(ctk.CTkFrame):
         self.frame_cadastro.grid_columnconfigure(0, weight=1)
 
         self.logo_imagem = ctk.CTkImage(
-            light_image=Image.open("images/ricoIcon.png"),
-            dark_image=Image.open("images/ricoIcon.png"),
+            Image.open(path.join(PATH_IMGS, "ricoIcon.png")),
             size=(258, 258)
         )
 
@@ -97,12 +100,19 @@ class telaLoginFrame(ctk.CTkFrame):
         self.new_user_button.grid(row=7, column=0, pady=10)
 
     def criar_componentes_explicativos(self):
-        imagem_final = Image.open("images/teste4.png")
+        imagem_final = Image.open(path.join(PATH_IMGS, "teste4.png"))
+
+        largura_tela = (self.winfo_screenwidth() / 1.7)
+        altura_tela = (self.winfo_screenheight() * 1.1)
+
+        # Você pode usar um percentual da tela se quiser, por exemplo, 80% da largura e 90% da altura
+        largura_img = int(largura_tela * 0.8)
+        altura_img = int(altura_tela * 0.9)
 
         self.layout_completo_img = ctk.CTkImage(
             light_image=imagem_final,
             dark_image=imagem_final,
-            size=(920, 1080)
+            size=(largura_img, altura_img)
         )
 
         self.layout_completo_label = ctk.CTkLabel(

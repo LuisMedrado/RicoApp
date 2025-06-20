@@ -57,6 +57,46 @@ empresas = [
         "quantidade": 0,
         "preco_base": 1.50,
         "lucro_unitario": 0.90
+    },
+    {
+        "nome": "Greenline",
+        "icone": "greenline.png",
+        "risco": "Baixo",
+        "quantidade": 0,
+        "preco_base": 2.30,
+        "lucro_unitario": 0.50
+    },
+    {
+        "nome": "Broadpeak",
+        "icone": "broadpeak.png",
+        "risco": "Médio",
+        "quantidade": 0,
+        "preco_base": 2.60,
+        "lucro_unitario": 0.75
+    },
+    {
+        "nome": "Solidity",
+        "icone": "solidity.png",
+        "risco": "Alto",
+        "quantidade": 0,
+        "preco_base": 1.60,
+        "lucro_unitario": 1.30
+    },
+    {
+        "nome": "Greenpoint",
+        "icone": "greenpoint.png",
+        "risco": "Médio",
+        "quantidade": 0,
+        "preco_base": 2.00,
+        "lucro_unitario": 0.90
+    },
+    {
+        "nome": "Lucrative",
+        "icone": "lucrative.png",
+        "risco": "Baixo",
+        "quantidade": 0,
+        "preco_base": 2.90,
+        "lucro_unitario": 0.65
     }
 ]
 
@@ -320,7 +360,7 @@ class JogoGUI(ctk.CTk):
         self.atualizar_lista_empresas()
 
     def _mostrar_popup(self, titulo, mensagem, cor_cabecalho="#3498DB", callback=None):
-        # popups especiais de Evento e Lucro do mês
+        # Popups especiais de Evento e Lucro do mês
         if titulo in ("Eventos do mês", "Lucro do mês"):
             popup = ctk.CTkToplevel(self)
             popup.transient(self)
@@ -383,7 +423,7 @@ class JogoGUI(ctk.CTk):
             self.active_popups.append(popup)
             return
 
-        # popup padrão
+        # Popup padrão
         popup = ctk.CTkToplevel(self)
         popup.transient(self)
         popup.overrideredirect(True)

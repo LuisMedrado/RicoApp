@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 from os import path
+import controller.usuario_control as user
 
 COR_FUNDO_ESCURA = "#1E1B2E"
 COR_FUNDO_CLARA = "#3F2A87"
@@ -12,6 +13,7 @@ PATH_IMGS = path.join(DIR_TELA, "images")
 class telaLoginFrame(ctk.CTkFrame):
     def __init__(self, parent_container, controller, **kwargs):
         super().__init__(parent_container, **kwargs)
+        self.controller = controller
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -84,15 +86,29 @@ class telaLoginFrame(ctk.CTkFrame):
         )
         self.forget_password.grid(row=5, column=0, pady=(10, 254))
 
+        def pegar_valores_login():
+            from view.tela_dict import telaInicialFrame
+
+            email = self.input_email.get()
+            senha = self.input_senha.get()
+
+            verif = user.select_login(email, senha)
+
+            if verif == True:
+                self.controller.mostrar_frame(telaInicialFrame)
+            else:
+                mostrar_popup_erro("Email ou senha incorretos.")
+
         self.button_login = ctk.CTkButton(
             self.frame_cadastro,
             fg_color="#3F2A87",
             text="Entrar",
             width=114,
-            height=46
+            height=46,
+            command=pegar_valores_login
         )
         self.button_login.grid(row=6, column=0, pady=10)
-
+            
         self.new_user_button = ctk.CTkButton(
             self.frame_cadastro,
             fg_color="transparent",
@@ -100,6 +116,22 @@ class telaLoginFrame(ctk.CTkFrame):
             font=ctk.CTkFont(underline=True)
         )
         self.new_user_button.grid(row=7, column=0, pady=10)
+
+        def mostrar_popup_erro(mensagem):
+            popup = ctk.CTkToplevel()
+            popup.title("Erro de Login")
+            popup.geometry("300x150")
+            popup.resizable(False, False)
+
+            label_mensagem = ctk.CTkLabel(popup, text=mensagem, font=ctk.CTkFont(size=14))
+            label_mensagem.pack(pady=20)
+
+            btn_fechar = ctk.CTkButton(popup, text="Fechar", command=popup.destroy)
+            btn_fechar.pack(pady=10)
+
+            # centralizar o popup
+            popup.grab_set()
+            popup.focus_force()
 
     def criar_componentes_explicativos(self):
         imagem_final = Image.open(path.join(PATH_IMGS, "teste4.png"))

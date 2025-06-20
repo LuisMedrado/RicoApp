@@ -3,9 +3,19 @@ from pyglet import font as pfont
 from os import path, listdir
 from PIL import Image
 import webbrowser
+from view.db import get_db_connection
+from model.login.usuarioModel import usuarioModel
+from model.artigosModel import artigosModel
+from model.jogoModel import jogoModel
+from model.reviewModel import reviewsModel
+import sys
 
 # importar a classe das telas
-from tela_login import telaLoginFrame
+from view.tela_login import telaLoginFrame
+from view.tela_cadastro import TelaCadastro
+
+# adicionar as outras pastas ao path
+sys.path.append(path.abspath(path.join(path.dirname(__file__), '..')))
 
 # consts cores
 DIR_TELA = path.dirname(__file__)
@@ -66,7 +76,8 @@ class telaInicialFrame(ctk.CTkFrame):
                                   command=lambda: controller.mostrar_frame(telaLoginFrame))  # NAVEGAÇÃO
         btn_cadastro = ctk.CTkButton(frame_menu, text="Cadastre-se", fg_color="white", text_color="black",
                                      hover_color="#d4d4d4",
-                                     font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold"))
+                                     font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold"),
+                                     command=lambda: controller.mostrar_frame(TelaCadastro))
         # adicionar: command=lambda: controller.mostrar_frame(TelaCadastroFrame))
 
         btn_sobre.pack(side="left", padx=5)
@@ -184,6 +195,7 @@ class appPrincipal(ctk.CTk):
         self.PAGINAS = {
             'inicial': telaInicialFrame,
             'login': telaLoginFrame,
+            'cadastro': TelaCadastro
         }
 
         for nome_pagina, frame_class in self.PAGINAS.items():
@@ -201,8 +213,11 @@ class appPrincipal(ctk.CTk):
         else:
             print(f"Erro: frame para a classe {classe_frame_alvo} não encontrado")
 
-
-if __name__ == "__main__":
+def iniciar_app():
     app = appPrincipal()
     app.mainloop()
-
+    get_db_connection()
+    usuarioModel()
+    artigosModel()
+    jogoModel()
+    reviewsModel()

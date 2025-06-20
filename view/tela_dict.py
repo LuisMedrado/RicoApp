@@ -1,5 +1,5 @@
 import customtkinter as ctk
-import tela_inicial as modulo_inicial
+import view.tela_inicial as modulo_inicial
 from os import path, listdir
 from PIL import Image
 from pyglet import font as pfont

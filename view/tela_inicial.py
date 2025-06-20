@@ -8,11 +8,13 @@ from model.login.usuarioModel import usuarioModel
 from model.artigosModel import artigosModel
 from model.jogoModel import jogoModel
 from model.reviewModel import reviewsModel
+from view.utils import carregar_fontes_globais
 import sys
 
 # importar a classe das telas
 from view.tela_login import telaLoginFrame
 from view.tela_cadastro import TelaCadastro
+from view.tela_dict import telaDictFrame
 
 # adicionar as outras pastas ao path
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '..')))
@@ -28,21 +30,6 @@ COR_SUBHEADER = "#7a6ef5"
 COR_FUNDO = "#2d234d"
 COR_CLARA = "#e6e6f0"
 COR_AZUL = "#7a6ef5"
-
-
-# carregar fontes
-def carregar_fontes_globais():
-    try:
-        for nome_arq in listdir(PATH_FONTS):
-            if nome_arq.lower().endswith((".ttf", ".otf")):
-                nome_fonte = path.join(PATH_FONTS, nome_arq)
-                pfont.add_file(nome_fonte)
-                # print(f"DEBUG fonte carregada: {nome_arq}")
-    except FileNotFoundError:
-        print(f"ERRO: Diretório de fontes '{PATH_FONTS}' não encontrado.")
-    except Exception as e:
-        print(f"Erro ao carregar fontes: {e}")
-
 
 # funcs
 def abrirLink():
@@ -195,7 +182,8 @@ class appPrincipal(ctk.CTk):
         self.PAGINAS = {
             'inicial': telaInicialFrame,
             'login': telaLoginFrame,
-            'cadastro': TelaCadastro
+            'cadastro': TelaCadastro,
+            'dict': telaDictFrame
         }
 
         for nome_pagina, frame_class in self.PAGINAS.items():

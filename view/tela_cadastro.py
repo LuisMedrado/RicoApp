@@ -119,6 +119,40 @@ class TelaCadastro(ctk.CTkFrame):
         )
         self.input_confirma_senha.grid(row=4, column=0, pady=10)
 
+        def cadastrar():
+            from view.tela_dict import telaDictFrame
+
+            nome = self.input_nome.get()
+            email = self.input_email.get()
+            senha = self.input_senha.get()
+            senhaConf = self.input_confirma_senha.get()
+
+            verif = user.insert_cadastro(nome, email, senha)
+
+            if senha == senhaConf and verif == True:
+                self.controller.mostrar_frame(telaDictFrame)
+            elif senha != senha and verif == True:
+                mostrar_popup_erro("Senha e confirmação de senha não condizem!")
+            else:
+                mostrar_popup_erro(verif)
+
+
+        def mostrar_popup_erro(mensagem):
+            popup = ctk.CTkToplevel()
+            popup.title("Erro de cadastro")
+            popup.geometry("300x150")
+            popup.resizable(False, False)
+
+            label_mensagem = ctk.CTkLabel(popup, text=mensagem, font=ctk.CTkFont(size=14))
+            label_mensagem.pack(pady=20)
+
+            btn_fechar = ctk.CTkButton(popup, text="Fechar", command=popup.destroy)
+            btn_fechar.pack(pady=10)
+
+            # centralizar o popup
+            popup.grab_set()
+            popup.focus_force()
+
         self.button_cadastrar = ctk.CTkButton(
             self.frame_cadastro,
             text="CADASTRAR",
@@ -127,9 +161,12 @@ class TelaCadastro(ctk.CTkFrame):
             width=150,
             height=46,
             corner_radius=25,
-            font=ctk.CTkFont(size=14, weight="bold")
+            font=ctk.CTkFont(size=14, weight="bold"),
+            command=cadastrar
         )
         self.button_cadastrar.grid(row=6, column=0, pady=(20, 80), sticky='s')
+
+        
 
 
 class App(ctk.CTk):
@@ -149,30 +186,6 @@ class App(ctk.CTk):
         # CORREÇÃO 1: Usando a classe correta, TelaCadastro
         self.tela_cadastro = TelaCadastro(self, controller=self)
         self.tela_cadastro.grid(row=0, column=0, sticky="nsew")
-
-
-    # def cadastrar():
-    #     from view.tela_dict import telaInicialFrame
-
-    #     email = self.input_email.get()
-    #     senha = self.input_senha.get()
-
-
-    #     def mostrar_popup_erro(mensagem):
-    #         popup = ctk.CTkToplevel()
-    #         popup.title("Erro de cadastro")
-    #         popup.geometry("300x150")
-    #         popup.resizable(False, False)
-
-    #         label_mensagem = ctk.CTkLabel(popup, text=mensagem, font=ctk.CTkFont(size=14))
-    #         label_mensagem.pack(pady=20)
-
-    #         btn_fechar = ctk.CTkButton(popup, text="Fechar", command=popup.destroy)
-    #         btn_fechar.pack(pady=10)
-
-    #         # centralizar o popup
-    #         popup.grab_set()
-    #         popup.focus_force()
 
 
 if __name__ == "__main__":

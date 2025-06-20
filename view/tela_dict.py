@@ -3,6 +3,7 @@ import view.tela_inicial as modulo_inicial
 from os import path, listdir
 from PIL import Image
 from pyglet import font as pfont
+from view.utils import carregar_fontes_globais
 
 DIR_TELA = path.dirname(__file__)
 PATH_FONTS = path.join(DIR_TELA, "fonts")
@@ -14,7 +15,7 @@ COR_FUNDO = "#2d234d"
 COR_TEXTO = "#E6E6F0"
 COR_PESQUISA = "#E6E6F0"
 
-modulo_inicial.carregar_fontes_globais()
+carregar_fontes_globais()
 
 def carregar_img(parent_frame, nome_img, tamanho, ancoragem):
         nome_arquivo_imagem = nome_img
@@ -42,14 +43,11 @@ def carregar_img(parent_frame, nome_img, tamanho, ancoragem):
         except Exception as e:
             print(f"Erro ao carregar imagem: {e}")
 
-class telaInicialFrame(ctk.CTk):
-    def __init__(self):
-        super().__init__()
-
-        self.title("RICO")
+class telaDictFrame(ctk.CTkFrame):
+    def __init__(self, parent_container, controller, **kwargs):
+        super().__init__(parent_container, **kwargs)
+        self.controller = controller
         self.configure(fg_color=COR_FUNDO)
-        self.resizable(True, True)
-        self.after(1, lambda: self.state("zoomed"))
 
         # SÓ UM PROTÓTIPO, PRA TESTAR OS ARTIGOS
         def get_articles():
@@ -151,5 +149,5 @@ class telaInicialFrame(ctk.CTk):
 
 
 if __name__ == "__main__":
-    app = telaInicialFrame()
+    app = telaDictFrame()
     app.mainloop()

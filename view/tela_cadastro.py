@@ -1,4 +1,3 @@
-
 from ctypes import c_ushort
 import customtkinter as ctk
 import tkinter as tk
@@ -6,6 +5,7 @@ from PIL.ImageChops import darker
 from PIL import Image, ImageTk
 from pyglet import image
 from os import path
+import controller.usuario_control as user
 
 COR_FUNDO_ESCURA = "#1E1B2E"
 COR_FUNDO_CLARA = "#3F2A87"
@@ -16,8 +16,9 @@ PATH_IMGS = path.join(DIR_TELA, "images")
 
 
 class TelaCadastro(ctk.CTkFrame):
-    def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)
+    def __init__(self, parent_container, controller, **kwargs):
+        super().__init__(parent_container, **kwargs)
+        self.controller = controller
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -36,7 +37,7 @@ class TelaCadastro(ctk.CTkFrame):
 
     def criar_componentes_explicativos(self):
 
-        imagem_final = Image.open("images/imagem_cadastro.png")
+        imagem_final = Image.open(path.join(PATH_IMGS, "imagem_cadastro.png"))
 
         self.layout_completo_img = ctk.CTkImage(
             light_image=imagem_final,
@@ -82,8 +83,30 @@ class App(ctk.CTk):
         self.tela_cadastro = TelaCadastro(self)
         self.tela_cadastro.grid(row=0, column=0, sticky="nsew")
 
+    # def cadastrar():
+    #     from view.tela_dict import telaInicialFrame
+
+    #     email = self.input_email.get()
+    #     senha = self.input_senha.get()
+
+
+    #     def mostrar_popup_erro(mensagem):
+    #         popup = ctk.CTkToplevel()
+    #         popup.title("Erro de cadastro")
+    #         popup.geometry("300x150")
+    #         popup.resizable(False, False)
+
+    #         label_mensagem = ctk.CTkLabel(popup, text=mensagem, font=ctk.CTkFont(size=14))
+    #         label_mensagem.pack(pady=20)
+
+    #         btn_fechar = ctk.CTkButton(popup, text="Fechar", command=popup.destroy)
+    #         btn_fechar.pack(pady=10)
+
+    #         # centralizar o popup
+    #         popup.grab_set()
+    #         popup.focus_force()
+
 if __name__ == "__main__":
     app = App()
     app.mainloop()
-    usuarioModel()
 

@@ -29,3 +29,4 @@ def usuarioModel():
     finally:
         # 3. Fecha a conexão ao finalizar (ou em caso de erro)
         close_db_connection(conn, cursor)
+

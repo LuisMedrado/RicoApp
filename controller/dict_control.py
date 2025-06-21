@@ -14,7 +14,7 @@ def insert_dicionario():
                                  VALUES (NULL, 'Como aumentar seu pênis', 'Kid Bengala', 21/06/2025, 'Compra ai meu óleo que vai ficar grande')"""
             cursor.execute(cadastro_string)
             conn.commit()
-            print("Cadastro realizado com sucesso!")
+            print("Dicionário publicado com sucesso!")
             return True
 
         except sqlite3.Error as e:

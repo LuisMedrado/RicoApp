@@ -38,6 +38,20 @@ class telaLoginFrame(ctk.CTkFrame):
             dark_image=caminho_logo,
             size=(258, 258)
         )
+        
+        # BOTÃO DE VOLTAR (IMPORTAÇÃO INTERNA)
+        self.botao_voltar = ctk.CTkButton(
+            self.frame_cadastro,
+            text="← Voltar",
+            fg_color="transparent",
+            hover_color="#cccccc",
+            text_color=COR_DESTAQUE,
+            font=ctk.CTkFont(size=14, weight="bold"),
+            command=lambda: self.controller.mostrar_frame(
+                __import__('view.tela_inicial', fromlist=['telaInicialFrame']).telaInicialFrame
+            )
+        )
+        self.botao_voltar.grid(row=0, column=0, sticky="w", padx=20, pady=(20, 0))
 
         self.logo_label = ctk.CTkLabel(
             self.frame_cadastro,

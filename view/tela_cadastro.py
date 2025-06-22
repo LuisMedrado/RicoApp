@@ -1,4 +1,3 @@
-
 import customtkinter as ctk
 from PIL import Image
 from os import path
@@ -39,8 +38,6 @@ class TelaCadastro(ctk.CTkFrame):
 
         largura_img = int(largura_tela * 0.8)
         altura_img = int(altura_tela * 0.9)
-        imagem_final = Image.open(path.join(PATH_IMGS, "imagem_cadastro.png"))
-
 
         self.layout_completo_img = ctk.CTkImage(
             light_image=imagem_final,
@@ -56,18 +53,40 @@ class TelaCadastro(ctk.CTkFrame):
         )
         self.layout_completo_label.place(x=0, y=0)
 
-    
+        # Botão Voltar idêntico ao do primeiro arquivo
+        self.botao_voltar = ctk.CTkButton(
+            self.frame_explicativo,
+            text="← Voltar",
+            fg_color="#322080",  
+            hover_color="#4221B4",     
+            text_color=COR_DESTAQUE,
+            font=ctk.CTkFont(size=14, weight="bold"),
+            width=100,
+            height=35,
+            corner_radius=0,
+            border_width=0,            
+            anchor="w",
+            command=self.voltar_funcao
+        )
+        self.botao_voltar.grid(row=0, column=0, sticky="w", padx=20, pady=(20, 0))
+
+    def voltar_funcao(self):
+       
+        self.controller.mostrar_frame(
+            __import__('view.tela_inicial', fromlist=['telaInicialFrame']).telaInicialFrame
+        )
+
     def criar_componentes_cadastro(self):
         self.frame_cadastro.grid_columnconfigure(0, weight=1)
         self.frame_cadastro.grid_rowconfigure(0, weight=0)
-        self.frame_cadastro.grid_rowconfigure(5, weight=1)
+        self.frame_cadastro.grid_rowconfigure(6, weight=1)
 
         self.titulo_cadastro = ctk.CTkLabel(
             self.frame_cadastro,
             text="Cadastro",
             font=ctk.CTkFont(size=40, weight="bold")
         )
-        self.titulo_cadastro.grid(row=0, column=0, pady=(80, 40), padx=30, sticky='n')
+        self.titulo_cadastro.grid(row=1, column=0, pady=(80, 40), padx=30)
 
         self.input_nome = ctk.CTkEntry(
             self.frame_cadastro,
@@ -79,7 +98,7 @@ class TelaCadastro(ctk.CTkFrame):
             text_color=COR_FUNDO_ESCURA,
             font=ctk.CTkFont(size=12, weight="bold")
         )
-        self.input_nome.grid(row=1, column=0, pady=10)
+        self.input_nome.grid(row=2, column=0, pady=10)
 
         self.input_email = ctk.CTkEntry(
             self.frame_cadastro,
@@ -91,7 +110,7 @@ class TelaCadastro(ctk.CTkFrame):
             text_color=COR_FUNDO_ESCURA,
             font=ctk.CTkFont(size=12, weight="bold")
         )
-        self.input_email.grid(row=2, column=0, pady=10)
+        self.input_email.grid(row=3, column=0, pady=10)
 
         self.input_senha = ctk.CTkEntry(
             self.frame_cadastro,
@@ -104,7 +123,7 @@ class TelaCadastro(ctk.CTkFrame):
             show="*",
             font=ctk.CTkFont(size=12, weight="bold")
         )
-        self.input_senha.grid(row=3, column=0, pady=10)
+        self.input_senha.grid(row=4, column=0, pady=10)
 
         self.input_confirma_senha = ctk.CTkEntry(
             self.frame_cadastro,
@@ -117,7 +136,7 @@ class TelaCadastro(ctk.CTkFrame):
             show="*",
             font=ctk.CTkFont(size=12, weight="bold")
         )
-        self.input_confirma_senha.grid(row=4, column=0, pady=10)
+        self.input_confirma_senha.grid(row=5, column=0, pady=10)
 
         def cadastrar():
             from view.tela_dict import telaDictFrame
@@ -131,11 +150,10 @@ class TelaCadastro(ctk.CTkFrame):
 
             if senha == senhaConf and verif == True:
                 self.controller.mostrar_frame(telaDictFrame)
-            elif senha != senha and verif == True:
+            elif senha != senhaConf and verif == True:
                 mostrar_popup_erro("Senha e confirmação de senha não condizem!")
             else:
                 mostrar_popup_erro(verif)
-
 
         def mostrar_popup_erro(mensagem):
             popup = ctk.CTkToplevel()
@@ -149,7 +167,6 @@ class TelaCadastro(ctk.CTkFrame):
             btn_fechar = ctk.CTkButton(popup, text="Fechar", command=popup.destroy)
             btn_fechar.pack(pady=10)
 
-            # centralizar o popup
             popup.grab_set()
             popup.focus_force()
 
@@ -165,29 +182,3 @@ class TelaCadastro(ctk.CTkFrame):
             command=cadastrar
         )
         self.button_cadastrar.grid(row=6, column=0, pady=(20, 80), sticky='s')
-
-        
-
-
-class App(ctk.CTk):
-    def __init__(self):
-        super().__init__()
-
-        self.title("Cadastro de Usuário")
-
-        try:
-            self.state('zoomed')
-        except ctk.TclError:
-            self.attributes('-fullscreen', True)
-
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-
-        # CORREÇÃO 1: Usando a classe correta, TelaCadastro
-        self.tela_cadastro = TelaCadastro(self, controller=self)
-        self.tela_cadastro.grid(row=0, column=0, sticky="nsew")
-
-
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()

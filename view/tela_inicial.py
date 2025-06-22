@@ -5,7 +5,6 @@ from PIL import Image
 import webbrowser
 from view.db import get_db_connection
 from model.login.usuarioModel import usuarioModel
-from model.artigosModel import artigosModel
 from model.jogoModel import jogoModel
 from model.reviewModel import reviewsModel
 from view.utils import carregar_fontes_globais
@@ -207,7 +206,6 @@ def iniciar_app():
     app.mainloop()
     get_db_connection()
     usuarioModel()
-    artigosModel()
     jogoModel()
     reviewsModel()
     insertAdmin()

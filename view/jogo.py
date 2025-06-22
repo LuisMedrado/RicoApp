@@ -2,7 +2,7 @@ import customtkinter as ctk
 from tkinter import simpledialog
 import random
 from PIL import Image
-import os # Import the os module for path manipulation
+import os # Importar o módulo os para manipulação de caminhos
 
 # --------------------------
 # Configurações iniciais
@@ -50,7 +50,8 @@ class JogoGUI(ctk.CTk):
         self.logo_images   = []
         self.active_popups = []
 
-        # Define the path to your images folder
+        # Define o caminho para a pasta 'images' que está dentro da mesma pasta do jogo.py
+        # ou seja, RICOAPP/view/images/
         self.image_path = os.path.join(os.path.dirname(__file__), "images")
 
         self.bind("<Configure>", self._on_main_move)
@@ -68,12 +69,12 @@ class JogoGUI(ctk.CTk):
 
         # Botão Home
         try:
-            # Join the image path with the filename
+            # Carrega a imagem da pasta correta
             img = Image.open(os.path.join(self.image_path, "home.png"))
             self.home_image = ctk.CTkImage(img, size=(50,50))
         except FileNotFoundError:
-            print(f"Warning: home.png not found at {os.path.join(self.image_path, 'home.png')}. Using default.")
-            self.home_image = None # Or load a default image/text
+            print(f"Aviso: home.png não encontrada em {os.path.join(self.image_path, 'home.png')}. Usando padrão.")
+            self.home_image = None # Ou carregue uma imagem/texto padrão
         ctk.CTkButton(
             topo,
             image=self.home_image,
@@ -176,12 +177,12 @@ class JogoGUI(ctk.CTk):
         logo_f = ctk.CTkFrame(content, fg_color="transparent")
         logo_f.pack(side="left", padx=5, fill="y")
         try:
-            # Join the image path with the filename
+            # Carrega a imagem da pasta correta
             img = ctk.CTkImage(Image.open(os.path.join(self.image_path, empresa['icone'])), size=(64,64))
             self.logo_images.append(img)
             ctk.CTkLabel(logo_f, image=img, text="").pack(side="left", pady=5)
         except FileNotFoundError:
-            print(f"Warning: {empresa['icone']} not found at {os.path.join(self.image_path, empresa['icone'])}. Using default.")
+            print(f"Aviso: {empresa['icone']} não encontrada em {os.path.join(self.image_path, empresa['icone'])}. Usando padrão.")
             ctk.CTkLabel(logo_f, text="📈", font=("Arial",30), text_color="black").pack(side="left", pady=5)
         ctk.CTkLabel(
             logo_f,
@@ -282,13 +283,13 @@ class JogoGUI(ctk.CTk):
     def _verificar_eventos(self):
         lista = []
         for e in self.empresas:
-            if random.random() < 0.2:
-                if random.choice([True, False]):
-                    e['preco_base'] *= 0.7
+            if random.random() < 0.2: # 20% de chance de evento
+                if random.choice([True, False]): # 50% de chance de ser queda ou alta
+                    e['preco_base'] *= 0.7 # Queda de 30%
                     e['risco'] = 'Alto'
                     lista.append(f"{e['nome']} teve queda de 30%! Risco ALTO agora.")
                 else:
-                    e['preco_base'] *= 1.25
+                    e['preco_base'] *= 1.25 # Alta de 25%
                     e['risco'] = 'Baixo'
                     lista.append(f"{e['nome']} teve alta de 25%! Risco BAIXO agora.")
         return lista
@@ -301,8 +302,8 @@ class JogoGUI(ctk.CTk):
     def _mostrar_popup(self, titulo, mensagem, cor_cabecalho="#3498DB", callback=None):
         popup = ctk.CTkToplevel(self)
         popup.transient(self)
-        popup.overrideredirect(True)
-        popup.grab_set()
+        popup.overrideredirect(True) # Remove barra de título e bordas
+        popup.grab_set() # Bloqueia interação com a janela principal
 
         is_special = titulo in ("Eventos do mês", "Lucro do mês")
         popup._popup_width = 320 if is_special else 300
@@ -319,7 +320,7 @@ class JogoGUI(ctk.CTk):
                           corner_radius=20 if is_special else 12)
         cab.pack(fill="x", padx=2, pady=2)
         ctk.CTkLabel(cab, text=titulo, font=("Arial",14,"bold"), text_color="white").pack(side="left", padx=12, pady=10)
-        if titulo == "Eventos do mês":
+        if titulo == "Eventos do mês": # Pequeno indicador para eventos
             ctk.CTkLabel(cab, text="⌄", font=("Arial",14,"bold"), text_color="white").pack(side="right", padx=12, pady=10)
 
         body = ctk.CTkFrame(cont,
@@ -330,12 +331,12 @@ class JogoGUI(ctk.CTk):
                      text=mensagem,
                      font=("Arial",11),
                      text_color="white" if is_special else "#2C3E50",
-                     wraplength=296 if is_special else 260,
+                     wraplength=296 if is_special else 260, # Quebra de linha para mensagens longas
                      justify="left").pack(padx=10, pady=10)
 
         def fechar():
             popup.destroy()
-            if callback: callback()
+            if callback: callback() # Executa o callback se houver
 
         btn = ctk.CTkButton(cont,
                             text="OK",
@@ -349,13 +350,14 @@ class JogoGUI(ctk.CTk):
                             height=32 if is_special else 30)
         btn.pack(pady=(0,12) if is_special else (0,10))
 
-        popup.bind("<Escape>", lambda e: fechar())
-        popup.lift()
-        popup.attributes("-topmost", True)
-        popup.after_idle(popup.attributes, "-topmost", False)
-        self.active_popups.append(popup)
+        popup.bind("<Escape>", lambda e: fechar()) # Fecha com ESC
+        popup.lift() # Traz a janela para frente
+        popup.attributes("-topmost", True) # Mantém no topo
+        popup.after_idle(popup.attributes, "-topmost", False) # Permite que outras janelas a cubram depois
+        self.active_popups.append(popup) # Adiciona à lista de popups ativos para reposicionamento
 
     def _position_popup(self, popup):
+        # Calcula a posição do popup centralizado na janela principal
         rx, ry = self.winfo_rootx(), self.winfo_rooty()
         rw, rh = self.winfo_width(), self.winfo_height()
         pw, ph = popup._popup_width, popup._popup_height
@@ -364,7 +366,8 @@ class JogoGUI(ctk.CTk):
         popup.geometry(f"{pw}x{ph}+{x}+{y}")
 
     def _on_main_move(self, event):
-        for p in list(self.active_popups):
+        # Reposiciona popups ativos quando a janela principal é movida
+        for p in list(self.active_popups): # Copia a lista para evitar problemas ao remover itens
             if p.winfo_exists():
                 self._position_popup(p)
             else:

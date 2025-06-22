@@ -62,3 +62,39 @@ def select_login(email, senha):
 
     finally:
         close_db_connection(conn, cursor)
+
+def insertAdmin():
+    conn, cursor = None, None
+    try:
+        conn, cursor = get_db_connection()
+    except sqlite3.Error as e:
+        print(f"Erro ao conectar ao banco: {e}")
+        return "Erro de conexão."
+
+    if conn and cursor:
+        try:
+            # 1. Verificar se o admin já existe pelo email
+            cursor.execute("SELECT id FROM usuarios WHERE email = ?", ('admin@email.com',))
+            admin_existente = cursor.fetchone()
+
+            if admin_existente:
+                print("Admin já existe no banco de dados.")
+                return "Admin já existe."
+            else:
+                # 2. Se não existe, insere
+                cadastro_string = """INSERT INTO usuarios (id, nome, email, senha, saldo, tipo_de_investidor)
+                                     VALUES (?, ?, ?, ?, ?, ?)"""
+                valores_admin = (None, 'Admin', 'admin@email.com', 'Admin123', 100.00, 'Conservador')
+
+                cursor.execute(cadastro_string, valores_admin)
+                conn.commit()
+                print("Admin cadastrado com sucesso!")
+                return True
+
+        except sqlite3.Error as e:
+            print(f"Erro ao executar operação: {e}")
+            return "Erro no cadastro."
+        finally:
+            close_db_connection(conn, cursor)
+    else:
+        return "Erro inesperado: Conexão não estabelecida."

@@ -87,7 +87,7 @@ class telaLoginFrame(ctk.CTkFrame):
         self.forget_password.grid(row=5, column=0, pady=(10, 254))
 
         def pegar_valores_login():
-            from view.tela_dict import telaInicialFrame
+            from view.tela_dict import telaDictFrame
 
             email = self.input_email.get()
             senha = self.input_senha.get()
@@ -95,7 +95,7 @@ class telaLoginFrame(ctk.CTkFrame):
             verif = user.select_login(email, senha)
 
             if verif == True:
-                self.controller.mostrar_frame(telaInicialFrame)
+                self.controller.mostrar_frame(telaDictFrame)
             else:
                 mostrar_popup_erro("Email ou senha incorretos.")
 

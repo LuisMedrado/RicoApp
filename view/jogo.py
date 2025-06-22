@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import simpledialog
 import random
 from PIL import Image
+import os # Import the os module to handle paths
 
 # --------------------------
 # Configurações iniciais
@@ -64,10 +65,16 @@ class JogoGUI(ctk.CTk):
 
         # Botão Home
         try:
-            img = Image.open("home.png")
+            # Modified path for home.png
+            img = Image.open(os.path.join("images", "home.png"))
             self.home_image = ctk.CTkImage(img, size=(50,50))
-        except:
+        except FileNotFoundError:
+            print("Home image not found. Ensure 'home.png' is in the 'images' folder.")
             self.home_image = None
+        except Exception as e:
+            print(f"Error loading home image: {e}")
+            self.home_image = None
+
         ctk.CTkButton(
             topo,
             image=self.home_image,
@@ -170,11 +177,17 @@ class JogoGUI(ctk.CTk):
         logo_f = ctk.CTkFrame(content, fg_color="transparent")
         logo_f.pack(side="left", padx=5, fill="y")
         try:
-            img = ctk.CTkImage(Image.open(empresa['icone']), size=(64,64))
+            # Modified path for company icons
+            img = ctk.CTkImage(Image.open(os.path.join("images", empresa['icone'])), size=(64,64))
             self.logo_images.append(img)
             ctk.CTkLabel(logo_f, image=img, text="").pack(side="left", pady=5)
-        except:
+        except FileNotFoundError:
+            print(f"Icon for {empresa['nome']} not found. Ensure '{empresa['icone']}' is in the 'images' folder.")
             ctk.CTkLabel(logo_f, text="📈", font=("Arial",30), text_color="black").pack(side="left", pady=5)
+        except Exception as e:
+            print(f"Error loading icon for {empresa['nome']}: {e}")
+            ctk.CTkLabel(logo_f, text="📈", font=("Arial",30), text_color="black").pack(side="left", pady=5)
+
         ctk.CTkLabel(
             logo_f,
             text=f"{empresa['quantidade']}",

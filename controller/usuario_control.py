@@ -62,3 +62,36 @@ def select_login(email, senha):
 
     finally:
         close_db_connection(conn, cursor)
+
+def insertAdmin():
+    conn, cursor = None, None # Inicializa para garantir que sejam None em caso de erro inicial
+    try:
+        conn, cursor = get_db_connection()
+    except sqlite3.Error as e:
+        print(f"Erro ao conectar ao banco: {e}")
+        return "Erro de conexão."
+
+    if conn and cursor:
+        try:
+            # 1. Use placeholders (ponto de interrogação '?' para cada valor)
+            cadastro_string = """INSERT INTO usuarios (id, nome, email, senha, saldo, tipo_de_investidor)
+                                 VALUES (?, ?, ?, ?, ?, ?)"""
+
+            # 2. Passe os valores como uma tupla para o execute()
+            # O NULL para o ID é padrão para colunas AUTOINCREMENT PRIMARY KEY
+            valores_admin = (None, 'Admin', 'Admin@email.com', 'Admin123', 100.00, 'Conservador')
+
+            cursor.execute(cadastro_string, valores_admin) # Passa a tupla com os valores
+            conn.commit()
+            print("Admin cadastrado com sucesso!")
+            return True
+
+        except sqlite3.Error as e:
+            # Erros comuns: UNIQUE constraint failed (se já houver um admin com esse email)
+            # ou tabela não existe.
+            print(f"Erro ao executar insert: {e}")
+            return "Erro no cadastro."
+        finally:
+            close_db_connection(conn, cursor)
+    else: # Caso a conexão falhe antes do try interno
+        return "Erro inesperado: Conexão não estabelecida."

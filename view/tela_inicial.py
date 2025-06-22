@@ -9,6 +9,7 @@ from model.artigosModel import artigosModel
 from model.jogoModel import jogoModel
 from model.reviewModel import reviewsModel
 from view.utils import carregar_fontes_globais
+from controller.usuario_control import insertAdmin
 import sys
 
 # importar a classe das telas
@@ -209,3 +210,4 @@ def iniciar_app():
     artigosModel()
     jogoModel()
     reviewsModel()
+    insertAdmin()

@@ -66,18 +66,18 @@ class telaDictFrame(ctk.CTkFrame):
 
         carregar_img(header, "ricoIconVertical.png", 60, "w")
 
-        search_frame = ctk.CTkFrame(self, fg_color="transparent")
-        search_frame.pack(pady=0, padx=20, fill="x")
+        # search_frame = ctk.CTkFrame(self, fg_color="transparent")
+        # search_frame.pack(pady=0, padx=20, fill="x")
 
-        search_entry = ctk.CTkEntry(
-            search_frame,
-            placeholder_text="Como ficar rico com 5 reais...",
-            fg_color=COR_PESQUISA,
-            border_width=0,
-            height=40,
-            font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold")
-        )
-        search_entry.pack(expand=True, fill="x")
+        # search_entry = ctk.CTkEntry(
+        #     search_frame,
+        #     placeholder_text="Como ficar rico com 5 reais...",
+        #     fg_color=COR_PESQUISA,
+        #     border_width=0,
+        #     height=40,
+        #     font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold")
+        # )
+        # search_entry.pack(expand=True, fill="x")
 
         articles_container = ctk.CTkScrollableFrame(self, fg_color="transparent")
         articles_container.pack(pady=20, padx=20, fill="both", expand=True)

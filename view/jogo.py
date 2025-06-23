@@ -2,7 +2,7 @@ import customtkinter as ctk
 from tkinter import simpledialog
 import random
 from PIL import Image
-import os # Importar o módulo os para manipulação de caminhos
+import os
 
 # --------------------------
 # Configurações iniciais
@@ -20,41 +20,56 @@ SALDO_INICIAL = 10.00
 
 # Lista de empresas com dados originais
 empresas = [
-    {"nome": "Orbit Capital",     "icone": "orbitcapital.png",   "risco": "Médio", "quantidade": 0, "preco_base": 2.50, "lucro_unitario": 0.80},
-    {"nome": "Nexora Group",      "icone": "nexoragroup.png",    "risco": "Baixo",  "quantidade": 0, "preco_base": 2.80, "lucro_unitario": 0.60},
-    {"nome": "Skyline Dynamics",  "icone": "skylinedynamics.png","risco": "Alto",   "quantidade": 0, "preco_base": 1.80, "lucro_unitario": 1.20},
-    {"nome": "Stratos Edge",      "icone": "stratosedge.png",    "risco": "Alto",   "quantidade": 0, "preco_base": 1.90, "lucro_unitario": 1.10},
-    {"nome": "Veltrix Corp",      "icone": "veltrixcorp.png",    "risco": "Alto",   "quantidade": 0, "preco_base": 1.50, "lucro_unitario": 0.90},
-    {"nome": "Greenline",         "icone": "greenline.png",      "risco": "Baixo",  "quantidade": 0, "preco_base": 2.30, "lucro_unitario": 0.50},
-    {"nome": "Broadpeak",         "icone": "broadpeak.png",      "risco": "Médio",  "quantidade": 0, "preco_base": 2.60, "lucro_unitario": 0.75},
-    {"nome": "Solidity",          "icone": "solidity.png",       "risco": "Alto",   "quantidade": 0, "preco_base": 1.60, "lucro_unitario": 1.30},
-    {"nome": "Greenpoint",        "icone": "greenpoint.png",     "risco": "Médio",  "quantidade": 0, "preco_base": 2.00, "lucro_unitario": 0.90},
-    {"nome": "Lucrative",         "icone": "lucrative.png",      "risco": "Baixo",  "quantidade": 0, "preco_base": 2.90, "lucro_unitario": 0.65},
+    {"nome": "Orbit Capital", "icone": "orbitcapital.png", "risco": "Médio", "quantidade": 0, "preco_base": 2.50,
+     "lucro_unitario": 0.80},
+    {"nome": "Nexora Group", "icone": "nexoragroup.png", "risco": "Baixo", "quantidade": 0, "preco_base": 2.80,
+     "lucro_unitario": 0.60},
+    {"nome": "Skyline Dynamics", "icone": "skylinedynamics.png", "risco": "Alto", "quantidade": 0, "preco_base": 1.80,
+     "lucro_unitario": 1.20},
+    {"nome": "Stratos Edge", "icone": "stratosedge.png", "risco": "Alto", "quantidade": 0, "preco_base": 1.90,
+     "lucro_unitario": 1.10},
+    {"nome": "Veltrix Corp", "icone": "veltrixcorp.png", "risco": "Alto", "quantidade": 0, "preco_base": 1.50,
+     "lucro_unitario": 0.90},
+    {"nome": "Greenline", "icone": "greenline.png", "risco": "Baixo", "quantidade": 0, "preco_base": 2.30,
+     "lucro_unitario": 0.50},
+    {"nome": "Broadpeak", "icone": "broadpeak.png", "risco": "Médio", "quantidade": 0, "preco_base": 2.60,
+     "lucro_unitario": 0.75},
+    {"nome": "Solidity", "icone": "solidity.png", "risco": "Alto", "quantidade": 0, "preco_base": 1.60,
+     "lucro_unitario": 1.30},
+    {"nome": "Greenpoint", "icone": "greenpoint.png", "risco": "Médio", "quantidade": 0, "preco_base": 2.00,
+     "lucro_unitario": 0.90},
+    {"nome": "Lucrative", "icone": "lucrative.png", "risco": "Baixo", "quantidade": 0, "preco_base": 2.90,
+     "lucro_unitario": 0.65},
 ]
 
 # Guardar dados originais para reset
 for emp in empresas:
     emp['preco_base_original'] = emp['preco_base']
-    emp['risco_original']     = emp['risco']
+    emp['risco_original'] = emp['risco']
 
-class JogoGUI(ctk.CTk):
-    def __init__(self):
-        super().__init__()
-        self.title("Simulador de Ações")
-        self.geometry("360x700")
+
+class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
+    def __init__(self, master=None, parent_container=None, controller=None, **kwargs):
+        # Usa master se fornecido, senão usa parent_container
+        super().__init__(master or parent_container, **kwargs)
+        self.controller = controller
         self.configure(fg_color="#2E0068")
 
-        self.saldo         = SALDO_INICIAL
-        self.mes           = 1
-        self.empresas      = empresas
-        self.logo_images   = []
+        self.saldo = SALDO_INICIAL
+        self.mes = 1
+        self.empresas = empresas
+        self.logo_images = []
         self.active_popups = []
 
-        # Define o caminho para a pasta 'images' que está dentro da mesma pasta do jogo.py
-        # ou seja, RICOAPP/view/images/
-        self.image_path = os.path.join(os.path.dirname(__file__), "images")
+        # Define o caminho para a pasta 'images'
+        # __file__ pode não funcionar em todos os ambientes, ajuste se necessário
+        try:
+            self.image_path = os.path.join(os.path.dirname(__file__), "images")
+        except NameError:
+            # Fallback para o diretório atual se __file__ não estiver definido
+            self.image_path = "images"
 
-        self.bind("<Configure>", self._on_main_move)
+        # A responsabilidade de bind e gerenciamento de janela passa para a classe App
         self._criar_header()
         self._criar_frame_empresas()
         self._criar_footer()
@@ -64,37 +79,43 @@ class JogoGUI(ctk.CTk):
         self.after(500, self._mostrar_tutorial)
 
     def _criar_header(self):
+        # O master dos componentes agora é 'self' (o próprio frame)
         topo = ctk.CTkFrame(self, fg_color="#2E0068")
         topo.pack(fill="x", padx=20, pady=10)
 
         # Botão Home
         try:
-            # Carrega a imagem da pasta correta
-            img = Image.open(os.path.join(self.image_path, "home.png"))
-            self.home_image = ctk.CTkImage(img, size=(50,50))
-        except FileNotFoundError:
-            print(f"Aviso: home.png não encontrada em {os.path.join(self.image_path, 'home.png')}. Usando padrão.")
-            self.home_image = None # Ou carregue uma imagem/texto padrão
+            home_icon_path = os.path.join(self.image_path, "home.png")
+            if os.path.exists(home_icon_path):
+                img = Image.open(home_icon_path)
+                self.home_image = ctk.CTkImage(img, size=(50, 50))
+            else:
+                raise FileNotFoundError
+        except (FileNotFoundError, NameError):
+            print(f"Aviso: home.png não encontrada. Usando texto padrão.")
+            self.home_image = None
+
         ctk.CTkButton(
             topo,
             image=self.home_image,
-            text="",
+            text="🏠" if self.home_image is None else "",  # Texto fallback
+            font=("Arial", 24) if self.home_image is None else None,
             fg_color="transparent",
             hover_color="#4A0072",
             width=36,
             height=36,
             corner_radius=18,
             command=self._voltar_home
-        ).pack(side="left", padx=(0,10))
+        ).pack(side="left", padx=(0, 10))
 
         # Label Saldo
         saldo_frame = ctk.CTkFrame(topo, fg_color="#2E0068")
         saldo_frame.pack(side="left", fill="y", expand=True)
-        ctk.CTkLabel(saldo_frame, text="Saldo", font=("Arial",10), text_color="white").pack(anchor="w")
+        ctk.CTkLabel(saldo_frame, text="Saldo", font=("Arial", 10), text_color="white").pack(anchor="w")
         self.label_saldo = ctk.CTkLabel(
             saldo_frame,
-            text=f"R$ {self.saldo:,.2f}".replace(",","."),
-            font=("Arial",18,"bold"),
+            text=f"R$ {self.saldo:,.2f}".replace(",", "."),
+            font=("Arial", 18, "bold"),
             text_color="white"
         )
         self.label_saldo.pack(anchor="w")
@@ -102,11 +123,11 @@ class JogoGUI(ctk.CTk):
         # Label Meses
         mes_frame = ctk.CTkFrame(topo, fg_color="#2E0068")
         mes_frame.pack(side="right")
-        ctk.CTkLabel(mes_frame, text="Meses", font=("Arial",10), text_color="white").pack()
+        ctk.CTkLabel(mes_frame, text="Meses", font=("Arial", 10), text_color="white").pack()
         self.label_mes = ctk.CTkLabel(
             mes_frame,
             text=f"{self.mes}x",
-            font=("Arial",14),
+            font=("Arial", 14),
             fg_color="#D9D9D9",
             text_color="black",
             corner_radius=14,
@@ -118,16 +139,22 @@ class JogoGUI(ctk.CTk):
     def _voltar_home(self):
         # Resetar estado inicial
         self.saldo = SALDO_INICIAL
-        self.mes   = 1
+        self.mes = 1
         for emp in self.empresas:
-            emp['quantidade']   = 0
-            emp['preco_base']   = emp['preco_base_original']
-            emp['risco']        = emp['risco_original']
-        self.atualizar_tela()
+            emp['quantidade'] = 0
+            emp['preco_base'] = emp['preco_base_original']
+            emp['risco'] = emp['risco_original']
+
+        # Voltar para tela inicial usando o controller
+        if hasattr(self, 'controller') and self.controller:
+            from view.tela_inicial import telaInicialFrame
+            self.controller.mostrar_frame(telaInicialFrame)
+        else:
+            self.atualizar_tela()
 
     def _criar_frame_empresas(self):
         container = ctk.CTkFrame(self, fg_color="#2E0068")
-        container.pack(fill="both", expand=True, pady=(0,10))
+        container.pack(fill="both", expand=True, pady=(0, 10))
         self.canvas_empresas = ctk.CTkScrollableFrame(
             container,
             fg_color="#2E0068",
@@ -139,7 +166,7 @@ class JogoGUI(ctk.CTk):
     def _criar_footer(self):
         rodape = ctk.CTkFrame(self, fg_color="#2E0068")
         rodape.pack(fill="x", pady=10)
-        estilo_btn = {"font":("Arial",12,"bold"), "width":120, "height":40, "corner_radius":12}
+        estilo_btn = {"font": ("Arial", 12, "bold"), "width": 120, "height": 40, "corner_radius": 12}
         ctk.CTkButton(
             rodape, text="⮕ Avançar", fg_color="white", text_color="black",
             hover_color="#DDDDDD", command=self.avancar_mes, **estilo_btn
@@ -164,69 +191,72 @@ class JogoGUI(ctk.CTk):
             text=f"{empresa['risco']} risco",
             fg_color=cor,
             text_color="white",
-            font=("Arial",9,"bold"),
+            font=("Arial", 9, "bold"),
             corner_radius=6,
             height=20,
             width=80
-        ).pack(pady=(8,4))
+        ).pack(pady=(8, 4))
 
         content = ctk.CTkFrame(card, fg_color="white")
-        content.pack(fill="x", padx=10, pady=(0,10))
+        content.pack(fill="x", padx=10, pady=(0, 10))
 
         # Logo e quantidade
         logo_f = ctk.CTkFrame(content, fg_color="transparent")
         logo_f.pack(side="left", padx=5, fill="y")
         try:
-            # Carrega a imagem da pasta correta
-            img = ctk.CTkImage(Image.open(os.path.join(self.image_path, empresa['icone'])), size=(64,64))
+            icon_path = os.path.join(self.image_path, empresa['icone'])
+            if not os.path.exists(icon_path):
+                raise FileNotFoundError
+            img = ctk.CTkImage(Image.open(icon_path), size=(64, 64))
             self.logo_images.append(img)
             ctk.CTkLabel(logo_f, image=img, text="").pack(side="left", pady=5)
-        except FileNotFoundError:
-            print(f"Aviso: {empresa['icone']} não encontrada em {os.path.join(self.image_path, empresa['icone'])}. Usando padrão.")
-            ctk.CTkLabel(logo_f, text="📈", font=("Arial",30), text_color="black").pack(side="left", pady=5)
+        except (FileNotFoundError, NameError):
+            print(f"Aviso: {empresa['icone']} não encontrada. Usando emoji padrão.")
+            ctk.CTkLabel(logo_f, text="📈", font=("Arial", 30), text_color="black").pack(side="left", pady=5, padx=10)
+
         ctk.CTkLabel(
             logo_f,
             text=f"{empresa['quantidade']}",
             fg_color="#4B2E83",
             text_color="white",
-            font=("Arial",12,"bold"),
+            font=("Arial", 12, "bold"),
             width=40,
             height=40,
             corner_radius=20
-        ).pack(side="left", padx=(6,0), pady=5)
+        ).pack(side="left", padx=(6, 0), pady=5)
 
         # Info nome e custo
         info_f = ctk.CTkFrame(content, fg_color="transparent")
         info_f.pack(side="left", padx=5, fill="both", expand=True)
-        ctk.CTkLabel(info_f, text=empresa['nome'], font=("Arial",13,"bold"), text_color="black").pack(anchor="w")
+        ctk.CTkLabel(info_f, text=empresa['nome'], font=("Arial", 13, "bold"), text_color="black").pack(anchor="w")
         ctk.CTkLabel(
             info_f,
-            text=f"Custo: R$ {preco:,.2f}".replace(",","."),
-            font=("Arial",9),
+            text=f"Custo: R$ {preco:,.2f}".replace(",", "."),
+            font=("Arial", 9),
             text_color="black"
-        ).pack(anchor="w", pady=(4,0))
+        ).pack(anchor="w", pady=(4, 0))
 
         # Botões Comprar/Vender e lucro
         right_f = ctk.CTkFrame(content, fg_color="transparent")
         right_f.pack(side="right", padx=5, fill="y")
         ctk.CTkLabel(
             right_f,
-            text=f"+ R$ {empresa['quantidade']*empresa['lucro_unitario']:,.2f}".replace(",","."),
-            font=("Arial",12,"bold"),
+            text=f"+ R$ {empresa['quantidade'] * empresa['lucro_unitario']:,.2f}".replace(",", "."),
+            font=("Arial", 12, "bold"),
             text_color="#2ECC71"
         ).pack(anchor="e")
         ctk.CTkButton(
             right_f,
             text="Comprar",
-            font=("Arial",10,"bold"),
+            font=("Arial", 10, "bold"),
             fg_color="#27AE60",
             hover_color="#219653",
             command=lambda i=index: self.comprar(i)
-        ).pack(fill="x", pady=(4,4))
+        ).pack(fill="x", pady=(4, 4))
         ctk.CTkButton(
             right_f,
             text="Vender",
-            font=("Arial",10,"bold"),
+            font=("Arial", 10, "bold"),
             fg_color="#F1C40F",
             hover_color="#F39C12",
             command=lambda i=index: self.vender(i)
@@ -242,21 +272,30 @@ class JogoGUI(ctk.CTk):
             self.saldo -= preco
             emp['quantidade'] += 1
             self.atualizar_lista_empresas()
-            self.label_saldo.configure(text=f"R$ {self.saldo:,.2f}".replace(",","."))
+            self.label_saldo.configure(text=f"R$ {self.saldo:,.2f}".replace(",", "."))
         else:
-            self._mostrar_popup("Saldo insuficiente", f"Você precisa de R$ {preco:,.2f}".replace(",","."),
+            self._mostrar_popup("Saldo insuficiente", f"Você precisa de R$ {preco:,.2f}".replace(",", "."),
                                 "#E74C3C")
 
     def vender(self, index):
         emp = self.empresas[index]
         if emp['quantidade'] == 0:
             return self._mostrar_popup("Sem ações", "Você não possui ações dessa empresa.", "#E74C3C")
+
+        # O master do simpledialog deve ser a janela principal
+        main_window = self.winfo_toplevel()
         qtd = simpledialog.askinteger("Vender ações",
                                       f"Quantas ações de {emp['nome']} quer vender?",
+                                      parent=main_window,
                                       minvalue=1, maxvalue=emp['quantidade'])
         if qtd is None:
             return
-        total = self.calcular_preco(emp) * qtd
+
+        # Correção: O preço de venda deve ser o preço *antes* de decrementar a quantidade.
+        # Para simplificar, vamos usar o preço da última unidade comprada.
+        preco_unitario = emp['preco_base'] * (1.07 ** (emp['quantidade'] - 1))
+        total = preco_unitario * qtd
+
         emp['quantidade'] -= qtd
         self.saldo += total
         self.atualizar_lista_empresas()
@@ -270,7 +309,7 @@ class JogoGUI(ctk.CTk):
 
         def show_lucro():
             self._mostrar_popup("Lucro do mês",
-                                f"Você recebeu R$ {lucro:,.2f}".replace(",","."),
+                                f"Você recebeu R$ {lucro:,.2f}".replace(",", "."),
                                 "#2ECC71", callback=self.atualizar_tela)
 
         if eventos:
@@ -283,103 +322,109 @@ class JogoGUI(ctk.CTk):
     def _verificar_eventos(self):
         lista = []
         for e in self.empresas:
-            if random.random() < 0.2: # 20% de chance de evento
-                if random.choice([True, False]): # 50% de chance de ser queda ou alta
-                    e['preco_base'] *= 0.7 # Queda de 30%
+            if random.random() < 0.2:  # 20% de chance de evento
+                if random.choice([True, False]):  # 50% de chance de ser queda ou alta
+                    e['preco_base'] *= 0.7  # Queda de 30%
                     e['risco'] = 'Alto'
                     lista.append(f"{e['nome']} teve queda de 30%! Risco ALTO agora.")
                 else:
-                    e['preco_base'] *= 1.25 # Alta de 25%
+                    e['preco_base'] *= 1.25  # Alta de 25%
                     e['risco'] = 'Baixo'
                     lista.append(f"{e['nome']} teve alta de 25%! Risco BAIXO agora.")
         return lista
 
     def atualizar_tela(self):
-        self.label_saldo.configure(text=f"R$ {self.saldo:,.2f}".replace(",","."))
+        self.label_saldo.configure(text=f"R$ {self.saldo:,.2f}".replace(",", "."))
         self.label_mes.configure(text=f"{self.mes}x")
         self.atualizar_lista_empresas()
 
     def _mostrar_popup(self, titulo, mensagem, cor_cabecalho="#3498DB", callback=None):
-        popup = ctk.CTkToplevel(self)
-        popup.transient(self)
-        popup.overrideredirect(True) # Remove barra de título e bordas
-        popup.grab_set() # Bloqueia interação com a janela principal
+        # MODIFICADO: O master do Toplevel é a janela principal, não o frame.
+        main_window = self.winfo_toplevel()
+        popup = ctk.CTkToplevel(main_window)
+        popup.transient(main_window)  # Fica na frente da janela principal
+        popup.overrideredirect(True)
+        popup.grab_set()
 
         is_special = titulo in ("Eventos do mês", "Lucro do mês")
         popup._popup_width = 320 if is_special else 300
-        popup._popup_height= 200 if is_special else 180
+        popup._popup_height = 200 if is_special else 180
         self._position_popup(popup)
 
         cont = ctk.CTkFrame(popup,
-                           corner_radius=20 if is_special else 12,
-                           fg_color="#2E0068" if is_special else "white")
+                            corner_radius=20 if is_special else 12,
+                            fg_color="#2E0068" if is_special else "white")
         cont.pack(fill="both", expand=True)
 
         cab = ctk.CTkFrame(cont,
-                          fg_color="#4B2E83" if is_special else cor_cabecalho,
-                          corner_radius=20 if is_special else 12)
+                           fg_color="#4B2E83" if is_special else cor_cabecalho,
+                           corner_radius=20 if is_special else 12)
         cab.pack(fill="x", padx=2, pady=2)
-        ctk.CTkLabel(cab, text=titulo, font=("Arial",14,"bold"), text_color="white").pack(side="left", padx=12, pady=10)
-        if titulo == "Eventos do mês": # Pequeno indicador para eventos
-            ctk.CTkLabel(cab, text="⌄", font=("Arial",14,"bold"), text_color="white").pack(side="right", padx=12, pady=10)
+        ctk.CTkLabel(cab, text=titulo, font=("Arial", 14, "bold"), text_color="white").pack(side="left", padx=12,
+                                                                                            pady=10)
+        if titulo == "Eventos do mês":
+            ctk.CTkLabel(cab, text="⌄", font=("Arial", 14, "bold"), text_color="white").pack(side="right", padx=12,
+                                                                                             pady=10)
 
         body = ctk.CTkFrame(cont,
-                           corner_radius=12,
-                           fg_color="#2E0068" if is_special else "#F2F2F2")
-        body.pack(fill="both", expand=True, padx=12, pady=(8,12) if is_special else (0,10))
+                            corner_radius=12,
+                            fg_color="#2E0068" if is_special else "#F2F2F2")
+        body.pack(fill="both", expand=True, padx=12, pady=(8, 12) if is_special else (0, 10))
         ctk.CTkLabel(body,
                      text=mensagem,
-                     font=("Arial",11),
+                     font=("Arial", 11),
                      text_color="white" if is_special else "#2C3E50",
-                     wraplength=296 if is_special else 260, # Quebra de linha para mensagens longas
+                     wraplength=296 if is_special else 260,
                      justify="left").pack(padx=10, pady=10)
 
         def fechar():
+            self.active_popups.remove(popup)
             popup.destroy()
-            if callback: callback() # Executa o callback se houver
+            if callback: callback()
 
         btn = ctk.CTkButton(cont,
                             text="OK",
                             fg_color="#4B2E83" if is_special else cor_cabecalho,
                             hover_color="#3B1E6F" if is_special else None,
                             text_color="white",
-                            font=("Arial",11,"bold"),
+                            font=("Arial", 11, "bold"),
                             corner_radius=12 if is_special else 8,
                             command=fechar,
                             width=80,
                             height=32 if is_special else 30)
-        btn.pack(pady=(0,12) if is_special else (0,10))
+        btn.pack(pady=(0, 12) if is_special else (0, 10))
 
-        popup.bind("<Escape>", lambda e: fechar()) # Fecha com ESC
-        popup.lift() # Traz a janela para frente
-        popup.attributes("-topmost", True) # Mantém no topo
-        popup.after_idle(popup.attributes, "-topmost", False) # Permite que outras janelas a cubram depois
-        self.active_popups.append(popup) # Adiciona à lista de popups ativos para reposicionamento
+        popup.bind("<Escape>", lambda e: fechar())
+        popup.lift()
+        self.active_popups.append(popup)
 
     def _position_popup(self, popup):
-        # Calcula a posição do popup centralizado na janela principal
-        rx, ry = self.winfo_rootx(), self.winfo_rooty()
-        rw, rh = self.winfo_width(), self.winfo_height()
+        # MODIFICADO: Centraliza o popup na janela principal, não no frame.
+        main_window = self.winfo_toplevel()
+        rx, ry = main_window.winfo_rootx(), main_window.winfo_rooty()
+        rw, rh = main_window.winfo_width(), main_window.winfo_height()
         pw, ph = popup._popup_width, popup._popup_height
-        x = rx + (rw - pw)//2
-        y = ry + (rh - ph)//2
+        x = rx + (rw - pw) // 2
+        y = ry + (rh - ph) // 2
         popup.geometry(f"{pw}x{ph}+{x}+{y}")
 
     def _on_main_move(self, event):
         # Reposiciona popups ativos quando a janela principal é movida
-        for p in list(self.active_popups): # Copia a lista para evitar problemas ao remover itens
+        for p in list(self.active_popups):
             if p.winfo_exists():
                 self._position_popup(p)
             else:
                 self.active_popups.remove(p)
 
     def _mostrar_tutorial(self):
-        popup = ctk.CTkToplevel(self)
-        popup.transient(self)
+        # MODIFICADO: O master do Toplevel é a janela principal
+        main_window = self.winfo_toplevel()
+        popup = ctk.CTkToplevel(main_window)
+        popup.transient(main_window)
         popup.overrideredirect(True)
         popup.grab_set()
         popup._popup_width = 320
-        popup._popup_height= 240
+        popup._popup_height = 240
         self._position_popup(popup)
 
         cont = ctk.CTkFrame(popup, corner_radius=20, fg_color="#2E0068")
@@ -387,10 +432,11 @@ class JogoGUI(ctk.CTk):
 
         cab = ctk.CTkFrame(cont, fg_color="#6A1B9A", corner_radius=20)
         cab.pack(fill="x")
-        ctk.CTkLabel(cab, text="📘 Tutorial", font=("Arial",14,"bold"), text_color="white").pack(side="left", padx=12, pady=10)
+        ctk.CTkLabel(cab, text="📘 Tutorial", font=("Arial", 14, "bold"), text_color="white").pack(side="left", padx=12,
+                                                                                                  pady=10)
 
         body = ctk.CTkFrame(cont, fg_color="#2E0068", corner_radius=12)
-        body.pack(fill="both", expand=True, padx=12, pady=(8,12))
+        body.pack(fill="both", expand=True, padx=12, pady=(8, 12))
         ctk.CTkLabel(body,
                      text=(
                          "Invista em empresas, acumule lucros mensais e reaja a eventos de mercado.\n\n"
@@ -398,12 +444,13 @@ class JogoGUI(ctk.CTk):
                          "• Avance o tempo para receber lucros.\n"
                          "• Cuidado com o risco!"
                      ),
-                     font=("Arial",11),
+                     font=("Arial", 11),
                      text_color="white",
                      justify="left",
                      wraplength=296).pack(padx=10, pady=10)
 
         def fechar_tutorial():
+            self.active_popups.remove(popup)
             popup.destroy()
 
         ctk.CTkButton(cont,
@@ -411,18 +458,43 @@ class JogoGUI(ctk.CTk):
                       fg_color="#6A1B9A",
                       hover_color="#4A0072",
                       text_color="white",
-                      font=("Arial",11,"bold"),
+                      font=("Arial", 11, "bold"),
                       corner_radius=12,
                       command=fechar_tutorial,
                       width=100,
-                      height=32).pack(pady=(0,12))
+                      height=32).pack(pady=(0, 12))
 
         popup.bind("<Escape>", lambda e: fechar_tutorial())
         popup.lift()
-        popup.attributes("-topmost", True)
-        popup.after_idle(popup.attributes, "-topmost", False)
         self.active_popups.append(popup)
 
+
+# --------------------------
+# Classe Principal da Aplicação
+# --------------------------
+class App(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.title("Simulador de Ações")
+        self.geometry("360x700")
+
+        # Cria uma instância do nosso frame JogoGUI
+        self.jogo_frame = JogoGUI(master=self)
+        self.jogo_frame.pack(fill="both", expand=True)
+
+        # Associa o evento de mover a janela à função de reposicionar popups do frame
+        self.bind("<Configure>", self.on_window_move)
+
+    def on_window_move(self, event):
+        # Chama a função correspondente dentro do frame do jogo
+        self.jogo_frame._on_main_move(event)
+
+
 if __name__ == "__main__":
-    app = JogoGUI()
+    # Garante que a pasta de imagens exista
+    if not os.path.exists("images"):
+        os.makedirs("images")
+        print("Pasta 'images' criada. Por favor, adicione os ícones das empresas nela.")
+
+    app = App()
     app.mainloop()

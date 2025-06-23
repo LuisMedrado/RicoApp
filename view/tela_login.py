@@ -121,7 +121,7 @@ class telaLoginFrame(ctk.CTkFrame):
             height=46,
             command=pegar_valores_login
         )
-        self.button_login.grid(row=6, column=0, pady=10)
+        self.button_login.grid(row=5, column=0, pady=10)
             
         self.new_user_button = ctk.CTkButton(
             self.frame_cadastro,

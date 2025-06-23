@@ -7,6 +7,7 @@ from view.db import get_db_connection
 from model.login.usuarioModel import usuarioModel
 from model.jogoModel import jogoModel
 from model.reviewModel import reviewsModel
+from view.jogo import JogoGUI
 from view.utils import carregar_fontes_globais
 from controller.usuario_control import insertAdmin
 import sys
@@ -45,6 +46,8 @@ class telaInicialFrame(ctk.CTkFrame):
     def __init__(self, parent_container, controller):
         super().__init__(parent_container, fg_color=COR_FUNDO)
         self.controller = controller
+
+        from view.jogo import JogoGUI
 
         # header
         header = ctk.CTkFrame(self, height=60, fg_color=COR_HEADER, corner_radius=0)
@@ -166,7 +169,6 @@ class appPrincipal(ctk.CTk):
         carregar_fontes_globais()
 
         self.title("RICO")
-        # self.geometry("1920x1080")
         self.after(1, lambda: self.state("zoomed"))
 
         self.grid_rowconfigure(0, weight=1)
@@ -178,28 +180,59 @@ class appPrincipal(ctk.CTk):
         container_principal.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
+        self.jogo_frame = None  # Inicializa como None
 
         self.PAGINAS = {
             'inicial': telaInicialFrame,
             'login': telaLoginFrame,
             'cadastro': TelaCadastro,
             'dict': telaDictFrame
+            # Removemos o jogo daqui
         }
 
+        # Criar frames normais
         for nome_pagina, frame_class in self.PAGINAS.items():
             frame = frame_class(parent_container=container_principal, controller=self)
             self.frames[frame_class] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
+        # Bind global para eventos de movimento da janela
+        self.bind("<Configure>", self._on_window_move)
+
         self.mostrar_frame(telaInicialFrame)
 
+    def _on_window_move(self, event):
+        # Se o jogo estiver ativo, repassa o evento para ele
+        if self.jogo_frame and hasattr(self.jogo_frame, '_on_main_move'):
+            self.jogo_frame._on_main_move(event)
+
     def mostrar_frame(self, classe_frame_alvo):
-        """Diexa o frame especificado em foco na tela"""
+        """Mostra o frame especificado na tela"""
+        # Tratamento especial para o JogoGUI
+        from view.jogo import JogoGUI
+        if classe_frame_alvo == JogoGUI:
+            # Cria o frame do jogo se ainda não existir
+            if self.jogo_frame is None:
+                container_principal = next(iter(self.frames.values())).master
+                self.jogo_frame = JogoGUI(
+                    parent_container=container_principal,
+                    controller=self
+                )
+                self.jogo_frame.grid(row=0, column=0, sticky="nsew")
+            self.jogo_frame.tkraise()
+            return
+
+        # Para os outros frames, comportamento normal
         frame = self.frames.get(classe_frame_alvo)
         if frame:
             frame.tkraise()
         else:
             print(f"Erro: frame para a classe {classe_frame_alvo} não encontrado")
+
+    def abrir_jogo(self):
+        """Método helper para abrir o jogo"""
+        from view.jogo import JogoGUI
+        self.mostrar_frame(JogoGUI)
 
 def iniciar_app():
     app = appPrincipal()

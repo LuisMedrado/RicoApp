@@ -1,47 +1,51 @@
 import customtkinter as ctk
-import view.tela_inicial as modulo_inicial
-from os import path, listdir
+from os import path
 from PIL import Image
-from pyglet import font as pfont
-from view.utils import carregar_fontes_globais
+
+# Import das telas info
+from view.paginas.tela_info1 import TelaInfo1Frame
+from view.paginas.tela_info2 import TelaInfo2
+from view.paginas.tela_info3 import TelaInfo3
+from view.paginas.tela_info4 import TelaInfo4
+from view.paginas.tela_info5 import TelaInfo5
 
 DIR_TELA = path.dirname(__file__)
-PATH_FONTS = path.join(DIR_TELA, "fonts")
 PATH_IMGS = path.join(DIR_TELA, "images")
 
 COR_HEADER = "#3f2a87"
-COR_SUBHEADER = "#7a6ef5"
 COR_FUNDO = "#2d234d"
 COR_TEXTO = "#E6E6F0"
 COR_PESQUISA = "#E6E6F0"
 
-carregar_fontes_globais()
 
 def carregar_img(parent_frame, nome_img, tamanho, ancoragem):
-        nome_arquivo_imagem = nome_img
-        path_img = path.join(PATH_IMGS, nome_arquivo_imagem)
-        try:
-            pil_original_image = Image.open(path_img)
-            max_altura = tamanho
-            original_width, original_height = pil_original_image.size
-            aspect_ratio = original_width / float(original_height)
+    path_img = path.join(PATH_IMGS, nome_img)
+    try:
+        pil_original_image = Image.open(path_img)
+        max_altura = tamanho
+        original_width, original_height = pil_original_image.size
+        aspect_ratio = original_width / float(original_height)
 
-            img_altura_calc = max_altura
-            img_larg_calc = int(img_altura_calc * aspect_ratio)
+        img_altura_calc = max_altura
+        img_larg_calc = int(img_altura_calc * aspect_ratio)
 
-            pil_resized_image = pil_original_image.resize((img_larg_calc, img_altura_calc), Image.Resampling.LANCZOS)
+        pil_resized_image = pil_original_image.resize(
+            (img_larg_calc, img_altura_calc), Image.Resampling.LANCZOS
+        )
 
-            ctk_porquinho_image = ctk.CTkImage(light_image=pil_resized_image,
-                                               dark_image=pil_resized_image,
-                                               size=(img_larg_calc, img_altura_calc))
+        ctk_porquinho_image = ctk.CTkImage(
+            light_image=pil_resized_image,
+            dark_image=pil_resized_image,
+            size=(img_larg_calc, img_altura_calc),
+        )
 
-            label_img = ctk.CTkLabel(parent_frame, image=ctk_porquinho_image, text="")
-            label_img.pack(anchor=ancoragem, pady=(5, 15))
-        except FileNotFoundError:
-            print(f"ERRO imagem '{path_img}' não encontrada.")
+        label_img = ctk.CTkLabel(parent_frame, image=ctk_porquinho_image, text="")
+        label_img.pack(anchor=ancoragem, pady=(5, 15))
+    except FileNotFoundError:
+        print(f"ERRO imagem '{path_img}' não encontrada.")
+    except Exception as e:
+        print(f"Erro ao carregar imagem: {e}")
 
-        except Exception as e:
-            print(f"Erro ao carregar imagem: {e}")
 
 class telaDictFrame(ctk.CTkFrame):
     def __init__(self, parent_container, controller, **kwargs):
@@ -49,32 +53,38 @@ class telaDictFrame(ctk.CTkFrame):
         self.controller = controller
         self.configure(fg_color=COR_FUNDO)
 
-        # SÓ UM PROTÓTIPO, PRA TESTAR OS ARTIGOS
-        def get_articles():
-            """Ainda temos que implementar aqui um request do model/get_articles e estruturar a saída"""
-            return [
-                # placeholders por enquanto
-                "Quando comprar e vender ações?",
-                "Entendendo os tipos de risco",
-                "Como manter o saldo positivo",
-                "Guardar também é investir?",
-                "Como lucrar através das ações"
-            ]
+        # Lista de artigos
+        self.articles_list = [
+            "Quando comprar e vender ações?",
+            "Entendendo os tipos de risco",
+            "Como manter o saldo positivo",
+            "Guardar também é investir?",
+            "Como lucrar através das ações",
+        ]
 
-        # header
+        # Dicionário que mapeia o título do artigo para a classe da tela info
+        self.article_to_info = {
+            self.articles_list[0]: TelaInfo1Frame,
+            self.articles_list[1]: TelaInfo2,
+            self.articles_list[2]: TelaInfo3,
+            self.articles_list[3]: TelaInfo4,
+            self.articles_list[4]: TelaInfo5,
+        }
+
+        # Header
         header = ctk.CTkFrame(self, height=50, fg_color=COR_HEADER, corner_radius=0)
         header.pack(fill="x", side="top", pady=(0, 20))
 
-        menu_icon = ctk.CTkLabel(header, text="☰", font=(ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold"), 22))
+        menu_icon = ctk.CTkLabel(
+            header,
+            text="☰",
+            font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold"),
+        )
         menu_icon.pack(side="left", padx=(25, 0), pady=15)
 
         carregar_img(header, "ricoIconVertical.png", 60, "w")
 
-        # barra de pesquisa
-
-        # não sei se botamos uma query direto do banco aqui ou não, por segurança acho melhor não
-        # acho melhor fazer uma lógica de retornar os artigos como texto na get_articles(), e salvar em uma lista* o resultado *(LER A LINHA 112). 
-        # depois, percorrer a lista buscando pelo termo digitado
+        # Barra de pesquisa
         search_frame = ctk.CTkFrame(self, fg_color="transparent")
         search_frame.pack(pady=0, padx=20, fill="x")
 
@@ -84,70 +94,55 @@ class telaDictFrame(ctk.CTkFrame):
             fg_color=COR_PESQUISA,
             border_width=0,
             height=40,
-            font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold")
+            font=ctk.CTkFont(family="Roboto-Regular", size=16, weight="bold"),
         )
         search_entry.pack(expand=True, fill="x")
 
-        # container pros artigos, acho que vamos precisar de um scroll então já coloquei
-        articles_container = ctk.CTkScrollableFrame(
-            self,
-            fg_color="transparent"
-        )
+        # Container dos artigos com scroll
+        articles_container = ctk.CTkScrollableFrame(self, fg_color="transparent")
         articles_container.pack(pady=20, padx=20, fill="both", expand=True)
 
-        # puxar os artigos nessa call
-        articles_list = get_articles()
+        # Cria a lista de artigos com clique para navegar para a tela info
+        for article in self.articles_list:
+            def article_click_handler(event, title=article):
+                self.navegar_para_info(title)
 
-        for article in articles_list:
-            # DEBUG teste clique nos artigos
-            def article_click_handler(title=article):
-                print(f"artigo clicado: {title}")
-
-            # frame para cada artigo
             article_frame = ctk.CTkFrame(
                 articles_container,
                 fg_color=COR_HEADER,
                 height=120,
                 corner_radius=10,
-                cursor="hand2" 
+                cursor="hand2",
             )
             article_frame.pack(fill="x", pady=6)
 
-            # listener do clique no frame
-            article_frame.bind("<Button-1>", lambda event, title=article: article_click_handler(title))
+            article_frame.bind("<Button-1>", article_click_handler)
 
-
-            # título do artigo
             label = ctk.CTkLabel(
                 article_frame,
                 text=article,
-                font=ctk.CTkFont(family="Roboto-Regular", size=36, weight="bold"),
+                font=ctk.CTkFont(family="Roboto-Regular", size=24, weight="bold"),
                 text_color=COR_TEXTO,
-                padx=80,
-                pady=120
+                padx=20,
+                pady=40,
             )
-            label.pack(side="left", fill="x", expand=False)
-            # listener do clique no texto
-            label.bind("<Button-1>", lambda event, title=article: article_click_handler(title))
+            label.pack(side="left", fill="x", expand=True)
 
+            label.bind("<Button-1>", article_click_handler)
 
-            # setinha placeholder, trocar pelas imagens depois
-
-            # vamos precisar ver como vamos retornar as imagens junto ao título dos artigos.
-            # podemos fazer o retorno como um dicionário em vez de uma lista.
-            # nesse caso, talvez teríamos um pouco mais de trabalho pra percorrer os artigos no algoritmo de busca.
             setinha_label = ctk.CTkLabel(
                 article_frame,
                 text=">",
-                font=ctk.CTkFont(family="Roboto-Regular", size=36, weight="bold"),
+                font=ctk.CTkFont(family="Roboto-Regular", size=24, weight="bold"),
                 text_color=COR_TEXTO,
-                padx=20
+                padx=20,
             )
             setinha_label.pack(side="right")
-            # listener do clique na setinha
-            setinha_label.bind("<Button-1>", lambda event, title=article: article_click_handler(title))
+            setinha_label.bind("<Button-1>", article_click_handler)
 
-
-if __name__ == "__main__":
-    app = telaDictFrame()
-    app.mainloop()
+    def navegar_para_info(self, artigo_titulo):
+        info_frame_class = self.article_to_info.get(artigo_titulo)
+        if info_frame_class:
+            self.controller.mostrar_frame(info_frame_class)
+        else:
+            print(f"Tela info para o artigo '{artigo_titulo}' não encontrada.")

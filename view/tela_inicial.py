@@ -15,6 +15,12 @@ import sys
 from view.tela_login import telaLoginFrame
 from view.tela_cadastro import TelaCadastro
 from view.tela_dict import telaDictFrame
+from view.paginas.tela_info1 import TelaInfo1Frame
+from view.paginas.tela_info2 import TelaInfo2
+from view.paginas.tela_info3 import TelaInfo3
+from view.paginas.tela_info4 import TelaInfo4
+from view.paginas.tela_info5 import TelaInfo5
+
 
 # adicionar as outras pastas ao path
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '..')))
@@ -180,11 +186,16 @@ class appPrincipal(ctk.CTk):
         self.frames = {}
 
         self.PAGINAS = {
-            'inicial': telaInicialFrame,
-            'login': telaLoginFrame,
-            'cadastro': TelaCadastro,
-            'dict': telaDictFrame
-        }
+    'inicial': telaInicialFrame,
+    'login': telaLoginFrame,
+    'cadastro': TelaCadastro,
+    'dict': telaDictFrame,
+    'info1': TelaInfo1Frame,
+    'info2': TelaInfo2,
+    'info3': TelaInfo3,
+    'info4': TelaInfo4,
+    'info5': TelaInfo5
+}
 
         for nome_pagina, frame_class in self.PAGINAS.items():
             frame = frame_class(parent_container=container_principal, controller=self)

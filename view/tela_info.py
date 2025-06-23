@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 import os
-from utils import get_info_topico
+# from utils import get_info_topico
 
 # Cores para o design
 COR_NAV = "#3F2A87"
@@ -10,17 +10,32 @@ COR_TEXTO = "#FFFFFF"
 COR_FUNDO = "#1E1B2E"
 COR_CAIXA_TEXTO = "#2C2154"  # tom mais escuro do roxo
 
+DIR_TELA = os.path.dirname(__file__)
+PATH_IMGS = os.path.join(DIR_TELA, "images")
+
+from controller import dict_control as dc
+
 class TelaInfoFrame(ctk.CTkFrame):
-    def __init__(self, parent, topico, **kwargs):
+    def __init__(self, parent, id_artigo, **kwargs):
         super().__init__(parent, **kwargs)
-        self.topico = topico
         self.configure(fg_color=COR_FUNDO)
+
+        # Buscar dados no banco pelo ID
+        artigo = dc.carregar_artigo_por_id(id_artigo)
+
+        if artigo:
+            _, titulo, autor, data, texto = artigo
+        else:
+            titulo = "Artigo não encontrado"
+            autor = "N/A"
+            data = "N/A"
+            texto = "Não foi possível carregar este artigo."
 
         # === Barra de navegação superior ===
         nav_bar = ctk.CTkFrame(self, height=60, fg_color=COR_NAV)
         nav_bar.pack(fill="x", side="top")
 
-        img_path = os.path.join("view", "images", "ricoIconVertical.png")
+        img_path = os.path.join(PATH_IMGS, "ricoIconVertical.png")
         if os.path.exists(img_path):
             pil_image = Image.open(img_path)
             pil_image = pil_image.resize((180, 40), Image.Resampling.LANCZOS)
@@ -32,11 +47,11 @@ class TelaInfoFrame(ctk.CTkFrame):
             print("Imagem 'ricoIconVertical.png' não encontrada.")
 
         # === Dados do tópico ===
-        dados = get_info_topico(topico)
-        titulo = dados.get("titulo", "Sem título")
-        autor = dados.get("autor", "Desconhecido")
-        data = dados.get("data", "Data não informada")
-        texto = dados.get("descricao", "Sem descrição disponível.")
+        # dados = get_info_topico(topico)
+        # titulo = dados.get("titulo", "Sem título")
+        # autor = dados.get("autor", "Desconhecido")
+        # data = dados.get("data", "Data não informada")
+        # texto = dados.get("descricao", "Sem descrição disponível.")
 
         # Título
         self.label_titulo = ctk.CTkLabel(
@@ -89,7 +104,7 @@ class TelaInfoFrame(ctk.CTkFrame):
         margem_inferior = 10
         margem_esquerda = 20
 
-        arrow_path = os.path.join("view", "images", "arrow.png")
+        arrow_path = os.path.join(PATH_IMGS, "arrow.png")
         if os.path.exists(arrow_path):
             arrow_image = Image.open(arrow_path)
             arrow_image = arrow_image.transpose(Image.FLIP_LEFT_RIGHT)  # espelhar
@@ -106,7 +121,7 @@ class TelaInfoFrame(ctk.CTkFrame):
                 self.voltar_label.place(x=margem_esquerda, y=event.height - margem_inferior, anchor="sw")
             self.bind("<Configure>", on_resize)
 
-            self.voltar_label.bind("<Button-1>", lambda e: parent.destroy())
+            self.voltar_label.bind("<Button-1>", lambda e: self.winfo_toplevel().destroy())
         else:
             print("Imagem 'arrow.png' não encontrada.")
 

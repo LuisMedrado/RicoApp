@@ -209,3 +209,9 @@ def iniciar_app():
     jogoModel()
     reviewsModel()
     insertAdmin()
+    from controller import dict_control as dc
+
+    dc.insert_artigo_criptomoedas()
+    dc.insert_artigo_fiis()
+    dc.insert_artigo_renda_fixa_digital()
+    dc.insert_artigo_investimento_iniciante()

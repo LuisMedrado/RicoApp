@@ -4,6 +4,13 @@ import random
 from PIL import Image
 import os
 
+from view.tela_dict import telaDictFrame
+
+# Supondo que você terá estes arquivos na pasta 'view'
+# from view.tela_inicial import telaInicialFrame
+# from view.tela_dict import telaDictFrame
+# from view.jogo import JogoGUI # Já definido neste arquivo
+
 # --------------------------
 # Configurações iniciais
 # --------------------------
@@ -48,28 +55,31 @@ for emp in empresas:
     emp['risco_original'] = emp['risco']
 
 
-class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
+class JogoGUI(ctk.CTkFrame):
     def __init__(self, master=None, parent_container=None, controller=None, **kwargs):
-        # Usa master se fornecido, senão usa parent_container
         super().__init__(master or parent_container, **kwargs)
         self.controller = controller
         self.configure(fg_color="#2E0068")
 
+        # Inicialização de variáveis
         self.saldo = SALDO_INICIAL
         self.mes = 1
         self.empresas = empresas
         self.logo_images = []
         self.active_popups = []
 
+        # Inicialização da sidebar
+        self.sidebar_visible = False
+        self.sidebar = ctk.CTkFrame(self, width=200, fg_color="#3f2a87", corner_radius=0)
+        # A sidebar é configurada e mostrada pela primeira vez em toggle_sidebar
+
         # Define o caminho para a pasta 'images'
-        # __file__ pode não funcionar em todos os ambientes, ajuste se necessário
         try:
             self.image_path = os.path.join(os.path.dirname(__file__), "images")
         except NameError:
-            # Fallback para o diretório atual se __file__ não estiver definido
             self.image_path = "images"
 
-        # A responsabilidade de bind e gerenciamento de janela passa para a classe App
+        # Criação do layout
         self._criar_header()
         self._criar_frame_empresas()
         self._criar_footer()
@@ -78,28 +88,124 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
         # Mostrar tutorial após inicializar
         self.after(500, self._mostrar_tutorial)
 
+    # ---------------------------------------------------
+    # MÉTODOS DA NAVBAR/SIDEBAR FORNECIDOS PELO USUÁRIO
+    # ---------------------------------------------------
+
+    def setup_sidebar(self):
+        """Configura a sidebar com seus widgets"""
+        # Adiciona bind na sidebar para fechar ao clicar em qualquer lugar
+        self.sidebar.bind("<Button-1>", lambda e: self.toggle_sidebar())
+
+        # Label do menu
+        menu_label = ctk.CTkLabel(
+            self.sidebar,
+            text="Menu",
+            font=ctk.CTkFont(family="Roboto-Regular", size=20, weight="bold"),
+            text_color="white"
+        )
+        menu_label.pack(pady=(20, 10), padx=10)
+
+        # Previne que o clique no label feche a sidebar
+        menu_label.bind("<Button-1>", lambda e: "break")
+
+        # Importações locais para evitar ciclos
+        # NOTA: Estes imports exigem que você tenha os arquivos/classes correspondentes
+        # no seu projeto, por exemplo, em uma pasta 'view'.
+        from view.tela_inicial import telaInicialFrame
+        # from view.tela_dict import telaDictFrame # Este não foi usado no seu snippet
+
+        def create_button_command(command):
+            def wrapper():
+                command()  # Executa o comando original
+                self.toggle_sidebar()  # Fecha a sidebar
+
+            return wrapper
+
+        buttons_data = [
+            ("Dicionário", lambda: self.controller.mostrar_frame(telaDictFrame)),
+            ("Sair", lambda: self.controller.mostrar_frame(telaInicialFrame)),
+        ]
+
+        for text, command in buttons_data:
+            btn = ctk.CTkButton(
+                self.sidebar,
+                text=text,
+                command=create_button_command(command),  # Wrap o comando original
+                fg_color="#3f2a87",
+                hover_color="#6457d1",
+                height=40,
+                corner_radius=8
+            )
+            btn.pack(pady=5, padx=10, fill="x")
+            # Previne que o clique no botão propague para a sidebar
+            btn.bind("<Button-1>", lambda e: "break", add="+")
+
+    def animate_sidebar(self, show=True):
+        """Anima a entrada/saída da sidebar"""
+        if show:
+            # Garante que a sidebar seja configurada apenas uma vez
+            if not hasattr(self, "_sidebar_setup_done"):
+                self.setup_sidebar()
+                self._sidebar_setup_done = True
+
+            self.sidebar.place(x=-200, y=0, relheight=1)  # Começa fora da tela
+            self.sidebar.lift()
+            for i in range(-200, 1, 20):  # Animação de entrada mais suave
+                self.sidebar.place(x=i, y=0, relheight=1)
+                self.update_idletasks()
+                self.after(5)
+        else:
+            for i in range(0, -201, -20):  # Animação de saída mais suave
+                self.sidebar.place(x=i, y=0, relheight=1)
+                self.update_idletasks()
+                self.after(5)
+            self.sidebar.place_forget()
+
+    def toggle_sidebar(self, event=None):
+        """Alterna a visibilidade da sidebar com animação"""
+        if self.sidebar_visible:
+            self.animate_sidebar(show=False)
+            self.sidebar_visible = False
+        else:
+            self.animate_sidebar(show=True)
+            self.sidebar_visible = True
+
+    # ------------------------------------------
+    # MÉTODOS DE CRIAÇÃO DA INTERFACE DO JOGO
+    # ------------------------------------------
+
     def _criar_header(self):
-        # O master dos componentes agora é 'self' (o próprio frame)
+        """Cria o cabeçalho do jogo"""
         topo = ctk.CTkFrame(self, fg_color="#2E0068")
         topo.pack(fill="x", padx=20, pady=10)
 
-        # Botão Home
+        # Ícone do menu "☰" para abrir a sidebar
+        self.menu_icon = ctk.CTkLabel(
+            topo,
+            text="☰",
+            font=ctk.CTkFont(family="Roboto-Regular", size=22, weight="bold"),
+            cursor="hand2",
+            text_color="white"
+        )
+        self.menu_icon.pack(side="left", padx=(0, 15), pady=(0, 5))
+        self.menu_icon.bind("<Button-1>", self.toggle_sidebar)
+
+        # Botão Home (opcional, mantido da versão original)
         try:
             home_icon_path = os.path.join(self.image_path, "home.png")
-            if os.path.exists(home_icon_path):
-                img = Image.open(home_icon_path)
-                self.home_image = ctk.CTkImage(img, size=(50, 50))
-            else:
-                raise FileNotFoundError
+            img = Image.open(home_icon_path)
+            self.home_image = ctk.CTkImage(img, size=(30, 30))
+            home_text = ""
         except (FileNotFoundError, NameError):
-            print(f"Aviso: home.png não encontrada. Usando texto padrão.")
             self.home_image = None
+            home_text = "🏠"
 
         ctk.CTkButton(
             topo,
             image=self.home_image,
-            text="🏠" if self.home_image is None else "",  # Texto fallback
-            font=("Arial", 24) if self.home_image is None else None,
+            text=home_text,
+            font=("Arial", 24),
             fg_color="transparent",
             hover_color="#4A0072",
             width=36,
@@ -109,7 +215,7 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
         ).pack(side="left", padx=(0, 10))
 
         # Label Saldo
-        saldo_frame = ctk.CTkFrame(topo, fg_color="#2E0068")
+        saldo_frame = ctk.CTkFrame(topo, fg_color="transparent")
         saldo_frame.pack(side="left", fill="y", expand=True)
         ctk.CTkLabel(saldo_frame, text="Saldo", font=("Arial", 10), text_color="white").pack(anchor="w")
         self.label_saldo = ctk.CTkLabel(
@@ -121,7 +227,7 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
         self.label_saldo.pack(anchor="w")
 
         # Label Meses
-        mes_frame = ctk.CTkFrame(topo, fg_color="#2E0068")
+        mes_frame = ctk.CTkFrame(topo, fg_color="transparent")
         mes_frame.pack(side="right")
         ctk.CTkLabel(mes_frame, text="Meses", font=("Arial", 10), text_color="white").pack()
         self.label_mes = ctk.CTkLabel(
@@ -137,7 +243,7 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
         self.label_mes.pack()
 
     def _voltar_home(self):
-        # Resetar estado inicial
+        """Reseta o estado do jogo e volta para a tela inicial."""
         self.saldo = SALDO_INICIAL
         self.mes = 1
         for emp in self.empresas:
@@ -145,11 +251,12 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
             emp['preco_base'] = emp['preco_base_original']
             emp['risco'] = emp['risco_original']
 
-        # Voltar para tela inicial usando o controller
         if hasattr(self, 'controller') and self.controller:
+            # Este import precisa funcionar para o botão home funcionar
             from view.tela_inicial import telaInicialFrame
             self.controller.mostrar_frame(telaInicialFrame)
         else:
+            # Fallback se não houver controller
             self.atualizar_tela()
 
     def _criar_frame_empresas(self):
@@ -211,7 +318,6 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
             self.logo_images.append(img)
             ctk.CTkLabel(logo_f, image=img, text="").pack(side="left", pady=5)
         except (FileNotFoundError, NameError):
-            print(f"Aviso: {empresa['icone']} não encontrada. Usando emoji padrão.")
             ctk.CTkLabel(logo_f, text="📈", font=("Arial", 30), text_color="black").pack(side="left", pady=5, padx=10)
 
         ctk.CTkLabel(
@@ -282,7 +388,6 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
         if emp['quantidade'] == 0:
             return self._mostrar_popup("Sem ações", "Você não possui ações dessa empresa.", "#E74C3C")
 
-        # O master do simpledialog deve ser a janela principal
         main_window = self.winfo_toplevel()
         qtd = simpledialog.askinteger("Vender ações",
                                       f"Quantas ações de {emp['nome']} quer vender?",
@@ -291,8 +396,6 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
         if qtd is None:
             return
 
-        # Correção: O preço de venda deve ser o preço *antes* de decrementar a quantidade.
-        # Para simplificar, vamos usar o preço da última unidade comprada.
         preco_unitario = emp['preco_base'] * (1.07 ** (emp['quantidade'] - 1))
         total = preco_unitario * qtd
 
@@ -322,13 +425,13 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
     def _verificar_eventos(self):
         lista = []
         for e in self.empresas:
-            if random.random() < 0.2:  # 20% de chance de evento
-                if random.choice([True, False]):  # 50% de chance de ser queda ou alta
-                    e['preco_base'] *= 0.7  # Queda de 30%
+            if random.random() < 0.2:
+                if random.choice([True, False]):
+                    e['preco_base'] *= 0.7
                     e['risco'] = 'Alto'
                     lista.append(f"{e['nome']} teve queda de 30%! Risco ALTO agora.")
                 else:
-                    e['preco_base'] *= 1.25  # Alta de 25%
+                    e['preco_base'] *= 1.25
                     e['risco'] = 'Baixo'
                     lista.append(f"{e['nome']} teve alta de 25%! Risco BAIXO agora.")
         return lista
@@ -339,10 +442,9 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
         self.atualizar_lista_empresas()
 
     def _mostrar_popup(self, titulo, mensagem, cor_cabecalho="#3498DB", callback=None):
-        # MODIFICADO: O master do Toplevel é a janela principal, não o frame.
         main_window = self.winfo_toplevel()
         popup = ctk.CTkToplevel(main_window)
-        popup.transient(main_window)  # Fica na frente da janela principal
+        popup.transient(main_window)
         popup.overrideredirect(True)
         popup.grab_set()
 
@@ -351,13 +453,11 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
         popup._popup_height = 200 if is_special else 180
         self._position_popup(popup)
 
-        cont = ctk.CTkFrame(popup,
-                            corner_radius=20 if is_special else 12,
+        cont = ctk.CTkFrame(popup, corner_radius=20 if is_special else 12,
                             fg_color="#2E0068" if is_special else "white")
         cont.pack(fill="both", expand=True)
 
-        cab = ctk.CTkFrame(cont,
-                           fg_color="#4B2E83" if is_special else cor_cabecalho,
+        cab = ctk.CTkFrame(cont, fg_color="#4B2E83" if is_special else cor_cabecalho,
                            corner_radius=20 if is_special else 12)
         cab.pack(fill="x", padx=2, pady=2)
         ctk.CTkLabel(cab, text=titulo, font=("Arial", 14, "bold"), text_color="white").pack(side="left", padx=12,
@@ -366,31 +466,19 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
             ctk.CTkLabel(cab, text="⌄", font=("Arial", 14, "bold"), text_color="white").pack(side="right", padx=12,
                                                                                              pady=10)
 
-        body = ctk.CTkFrame(cont,
-                            corner_radius=12,
-                            fg_color="#2E0068" if is_special else "#F2F2F2")
+        body = ctk.CTkFrame(cont, corner_radius=12, fg_color="#2E0068" if is_special else "#F2F2F2")
         body.pack(fill="both", expand=True, padx=12, pady=(8, 12) if is_special else (0, 10))
-        ctk.CTkLabel(body,
-                     text=mensagem,
-                     font=("Arial", 11),
-                     text_color="white" if is_special else "#2C3E50",
-                     wraplength=296 if is_special else 260,
-                     justify="left").pack(padx=10, pady=10)
+        ctk.CTkLabel(body, text=mensagem, font=("Arial", 11), text_color="white" if is_special else "#2C3E50",
+                     wraplength=296 if is_special else 260, justify="left").pack(padx=10, pady=10)
 
         def fechar():
             self.active_popups.remove(popup)
             popup.destroy()
             if callback: callback()
 
-        btn = ctk.CTkButton(cont,
-                            text="OK",
-                            fg_color="#4B2E83" if is_special else cor_cabecalho,
-                            hover_color="#3B1E6F" if is_special else None,
-                            text_color="white",
-                            font=("Arial", 11, "bold"),
-                            corner_radius=12 if is_special else 8,
-                            command=fechar,
-                            width=80,
+        btn = ctk.CTkButton(cont, text="OK", fg_color="#4B2E83" if is_special else cor_cabecalho,
+                            hover_color="#3B1E6F" if is_special else None, text_color="white",
+                            font=("Arial", 11, "bold"), corner_radius=12 if is_special else 8, command=fechar, width=80,
                             height=32 if is_special else 30)
         btn.pack(pady=(0, 12) if is_special else (0, 10))
 
@@ -399,7 +487,6 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
         self.active_popups.append(popup)
 
     def _position_popup(self, popup):
-        # MODIFICADO: Centraliza o popup na janela principal, não no frame.
         main_window = self.winfo_toplevel()
         rx, ry = main_window.winfo_rootx(), main_window.winfo_rooty()
         rw, rh = main_window.winfo_width(), main_window.winfo_height()
@@ -409,7 +496,6 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
         popup.geometry(f"{pw}x{ph}+{x}+{y}")
 
     def _on_main_move(self, event):
-        # Reposiciona popups ativos quando a janela principal é movida
         for p in list(self.active_popups):
             if p.winfo_exists():
                 self._position_popup(p)
@@ -417,7 +503,6 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
                 self.active_popups.remove(p)
 
     def _mostrar_tutorial(self):
-        # MODIFICADO: O master do Toplevel é a janela principal
         main_window = self.winfo_toplevel()
         popup = ctk.CTkToplevel(main_window)
         popup.transient(main_window)
@@ -437,31 +522,18 @@ class JogoGUI(ctk.CTkFrame):  # MODIFICADO: Herda de CTkFrame
 
         body = ctk.CTkFrame(cont, fg_color="#2E0068", corner_radius=12)
         body.pack(fill="both", expand=True, padx=12, pady=(8, 12))
-        ctk.CTkLabel(body,
-                     text=(
-                         "Invista em empresas, acumule lucros mensais e reaja a eventos de mercado.\n\n"
-                         "• Clique em 'Comprar' ou 'Vender'.\n"
-                         "• Avance o tempo para receber lucros.\n"
-                         "• Cuidado com o risco!"
-                     ),
-                     font=("Arial", 11),
-                     text_color="white",
-                     justify="left",
-                     wraplength=296).pack(padx=10, pady=10)
+        ctk.CTkLabel(body, text=("Invista em empresas, acumule lucros mensais e reaja a eventos de mercado.\n\n"
+                                 "• Clique em 'Comprar' ou 'Vender'.\n"
+                                 "• Avance o tempo para receber lucros.\n"
+                                 "• Cuidado com o risco!"),
+                     font=("Arial", 11), text_color="white", justify="left", wraplength=296).pack(padx=10, pady=10)
 
         def fechar_tutorial():
             self.active_popups.remove(popup)
             popup.destroy()
 
-        ctk.CTkButton(cont,
-                      text="Entendi",
-                      fg_color="#6A1B9A",
-                      hover_color="#4A0072",
-                      text_color="white",
-                      font=("Arial", 11, "bold"),
-                      corner_radius=12,
-                      command=fechar_tutorial,
-                      width=100,
+        ctk.CTkButton(cont, text="Entendi", fg_color="#6A1B9A", hover_color="#4A0072", text_color="white",
+                      font=("Arial", 11, "bold"), corner_radius=12, command=fechar_tutorial, width=100,
                       height=32).pack(pady=(0, 12))
 
         popup.bind("<Escape>", lambda e: fechar_tutorial())
@@ -478,23 +550,82 @@ class App(ctk.CTk):
         self.title("Simulador de Ações")
         self.geometry("360x700")
 
-        # Cria uma instância do nosso frame JogoGUI
-        self.jogo_frame = JogoGUI(master=self)
-        self.jogo_frame.pack(fill="both", expand=True)
+        # Container para os frames
+        container = ctk.CTkFrame(self)
+        container.pack(side="top", fill="both", expand=True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        self.frames = {}
+
+        # Cria uma instância de JogoGUI
+        # Passando 'self' como controller
+        frame = JogoGUI(master=container, controller=self)
+        self.frames[JogoGUI] = frame
+        frame.grid(row=0, column=0, sticky="nsew")
+
+        # Adicione outros frames aqui se necessário, por exemplo:
+        # from view.tela_inicial import telaInicialFrame
+        # frame_inicial = telaInicialFrame(master=container, controller=self)
+        # self.frames[telaInicialFrame] = frame_inicial
+        # frame_inicial.grid(row=0, column=0, sticky="nsew")
+
+        self.mostrar_frame(JogoGUI)  # Mostra o frame inicial
 
         # Associa o evento de mover a janela à função de reposicionar popups do frame
         self.bind("<Configure>", self.on_window_move)
 
+    def mostrar_frame(self, page_name):
+        '''Mostra um frame para a página solicitada'''
+        frame = self.frames[page_name]
+        frame.tkraise()
+
     def on_window_move(self, event):
-        # Chama a função correspondente dentro do frame do jogo
-        self.jogo_frame._on_main_move(event)
+        # Chama a função correspondente dentro do frame do jogo visível
+        # (Idealmente, isso deveria ser gerenciado de forma mais robusta se houver muitos popups em frames diferentes)
+        current_frame = self.frames[JogoGUI]  # Simplificação
+        current_frame._on_main_move(event)
 
 
 if __name__ == "__main__":
-    # Garante que a pasta de imagens exista
     if not os.path.exists("images"):
         os.makedirs("images")
         print("Pasta 'images' criada. Por favor, adicione os ícones das empresas nela.")
+
+
+    # Para o código funcionar, você precisará de uma estrutura como esta:
+    # │
+    # ├── main.py (onde a classe App está)
+    # └── view/
+    #     ├── __init__.py
+    #     ├── jogo.py (onde a classe JogoGUI está)
+    #     └── tela_inicial.py (onde a classe telaInicialFrame estaria)
+
+    # Como estamos executando um único arquivo, criamos uma classe 'mock' para telaInicialFrame
+    class telaInicialFrame(ctk.CTkFrame):
+        def __init__(self, master, controller):
+            super().__init__(master)
+            self.configure(fg_color="black")
+            label = ctk.CTkLabel(self, text="Tela Inicial (Mock)\nFeche para sair.", font=("Arial", 20))
+            label.pack(pady=100, padx=50)
+            btn = ctk.CTkButton(self, text="Sair do App", command=controller.destroy)
+            btn.pack()
+
+
+    # E modificamos a App para incluir este frame mock
+    original_app_init = App.__init__
+
+
+    def new_app_init(self):
+        original_app_init(self)
+        container = self.winfo_children()[0]
+        frame_inicial = telaInicialFrame(master=container, controller=self)
+        self.frames[telaInicialFrame] = frame_inicial
+        frame_inicial.grid(row=0, column=0, sticky="nsew")
+        self.mostrar_frame(JogoGUI)  # Garante que o jogo comece primeiro
+
+
+    App.__init__ = new_app_init
 
     app = App()
     app.mainloop()

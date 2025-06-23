@@ -104,37 +104,51 @@ class telaDictFrame(ctk.CTkFrame):
 
     def setup_sidebar(self):
         from view.jogo import JogoGUI
-        ctk.CTkLabel(
+
+        # Adiciona bind na sidebar para fechar ao clicar em qualquer lugar
+        self.sidebar.bind("<Button-1>", lambda e: self.toggle_sidebar())
+
+        # Label do menu
+        menu_label = ctk.CTkLabel(
             self.sidebar,
             text="Menu",
             font=ctk.CTkFont(family="Roboto-Regular", size=20, weight="bold"),
             text_color=COR_TEXTO
-        ).pack(pady=(20, 10), padx=10)
+        )
+        menu_label.pack(pady=(20, 10), padx=10)
 
-
+        # Previne que o clique no label feche a sidebar
+        menu_label.bind("<Button-1>", lambda e: "break")
 
         # Importações locais para evitar ciclos
         from view.tela_inicial import telaInicialFrame
-        from view.tela_dict import telaDictFrame  # auto-import para exemplificar (poderia ser outra tela)
-        # Adapte os imports conforme suas telas existentes!
+        from view.tela_dict import telaDictFrame
+
+        def create_button_command(command):
+            def wrapper():
+                command()  # Executa o comando original
+                self.toggle_sidebar()  # Fecha a sidebar
+
+            return wrapper
 
         buttons_data = [
             ("Jogo", lambda: self.controller.mostrar_frame(JogoGUI)),
             ("Sair", lambda: self.controller.mostrar_frame(telaInicialFrame)),
-
-            # Adicione outros botões, conectando com as telas que desejar
-            # ("Configurações", lambda: self.controller.mostrar_frame(SuaTelaConfig)),
         ]
+
         for text, command in buttons_data:
-            ctk.CTkButton(
+            btn = ctk.CTkButton(
                 self.sidebar,
                 text=text,
-                command=command,
+                command=create_button_command(command),  # Wrap o comando original
                 fg_color=COR_SUBHEADER,
                 hover_color="#6457d1",
                 height=40,
                 corner_radius=8
-            ).pack(pady=5, padx=10, fill="x")
+            )
+            btn.pack(pady=5, padx=10, fill="x")
+            # Previne que o clique no botão propague para a sidebar
+            btn.bind("<Button-1>", lambda e: "break", add="+")
 
     def animate_sidebar(self, show=True):
         """Anima a entrada/saída da sidebar"""
